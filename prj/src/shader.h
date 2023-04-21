@@ -7,8 +7,9 @@
 
 #include <string>
 #include <fstream>
-#include <sstream>
+#include <sstream> 
 #include <iostream>
+
 
 class Shader {
 
@@ -19,7 +20,12 @@ public:
 private:
 
   // given: the shader as a c string, type of shader desired, 
-  // returns: the id corresponding to an OpenGL shader object of that type compiled from the c string
+  // returns: 
+  //! 
+  //! 
+  //! 
+  //! @return unsigned int the id corresponding to an OpenGL shader object of that type compiled from the c string
+  //! 
   unsigned int CompileShader(const char* shader_source, GLenum shader_type) {
 
     unsigned int shader;

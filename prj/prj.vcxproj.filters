@@ -4,10 +4,14 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="res\glad.c" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\AABB2D.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="include\PhysicsEnv.h" />
+    <ClInclude Include="include\PhysicsObj.h" />
+    <ClInclude Include="include\AABB2D.h" />
   </ItemGroup>
   <ItemGroup>
     <_EmbedManagedResourceFile Include="res\shaders\fragment_shader.frag" />
