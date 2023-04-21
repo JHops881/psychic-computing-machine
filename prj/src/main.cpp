@@ -28,7 +28,9 @@
 #include "stb_image.h"
 
 int main() {
+  glfwInit();
 
+  glfwTerminate();
 
   return 0;
 }
