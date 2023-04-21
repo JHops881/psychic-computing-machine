@@ -1,13 +1,18 @@
+#include <stdexcept>
+
 #include "../include/AABB2D.h"
 
-AABB2D::AABB2D(glm::vec2 A, glm::vec2 B)
+AABB::AABB(glm::vec2 A, glm::vec2 B) noexcept(std::invalid_argument)
   : A(A), B(B)
 {
-
+  if (not this->VerifyState()) {
+    throw std::invalid_argument(std::format("Invalid verticies for AABB. A={} B={}", 
+      this->GetA(), this->GetB()))
+  }
 }
 
 
-bool AABB2D::IsColliding(const AABB2D *other)
+bool AABB::IsColliding(const AABB *other)
 {
   // other is to the left
   if (other->B.x <= this->A.x) {
@@ -28,8 +33,8 @@ bool AABB2D::IsColliding(const AABB2D *other)
   return true;
 }
 
-FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step, 
-                               glm::vec2* &out)
+FaceAABB AABB::WillCollide(const AABB* other, const glm::vec2 step, 
+                               glm::vec2 &out)
 {
   
   float gap;  // signed distance between this and other
@@ -42,7 +47,7 @@ FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step,
     shift = gap / step.x * step.y;
     if (other->B.y < this->A.y + shift && this->B.y + shift < other->A.y) 
     {
-      out = new glm::vec2(gap, shift);
+      out = glm::vec2(gap, shift);
       return RIGHT_FACE;
     }
   }
@@ -54,7 +59,7 @@ FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step,
     shift = gap / step.x * step.y;
     if (other->B.y < this->A.y + shift && this->B.y + shift < other->A.y)
     {
-      out = new glm::vec2(gap, shift);
+      out = glm::vec2(gap, shift);
       return LEFT_FACE;
     }
   }
@@ -66,7 +71,7 @@ FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step,
     shift = gap / step.y * step.x;
     if (other->A.x < this->B.x + shift && this->A.x + shift < other->B.x)
     {
-      out = new glm::vec2(gap, shift);
+      out = glm::vec2(gap, shift);
       return BOT_FACE;
     }
   }
@@ -78,7 +83,7 @@ FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step,
     shift = gap / step.y * step.x;
     if (other->A.x < this->B.x + shift && this->A.x + shift < other->B.x)
     {
-      out = new glm::vec2(gap, shift);
+      out = glm::vec2(gap, shift);
       return TOP_FACE;
     }
   }
@@ -86,12 +91,22 @@ FaceAABB2D AABB2D::WillCollide(const AABB2D* other, const glm::vec2 step,
   return NO_FACE;
 }
 
-glm::vec2 AABB2D::GetA()
+glm::vec2 AABB::GetA()
 {
   return this->A;
 }
 
-glm::vec2 AABB2D::GetB()
+glm::vec2 AABB::GetB()
 {
   return this->B;
+}
+
+void AABB::SetA(const glm::vec2 &a)
+{
+  this->A = a;
+}
+
+bool AABB::VerifyState()
+{
+  return this->A.x < this->B.x && this->B.y < this->A.y;
 }

@@ -9,7 +9,8 @@
 /// </summary>
 typedef struct {
 
-  AABB2D *hit_boxes;
+
+  AABB *hit_boxes;
 
   float mass;
   float surface_area;

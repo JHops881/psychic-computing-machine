@@ -5,9 +5,9 @@
 
 typedef enum {
   NO_FACE, LEFT_FACE, RIGHT_FACE, TOP_FACE, BOT_FACE
-} FaceAABB2D;
+} FaceAABB;
 
-class AABB2D 
+class AABB 
 {
 public:
 
@@ -17,14 +17,14 @@ public:
   /// 
   /// <param name="A">upper left corner</param>
   /// <param name="B">lower right corner</param>
-  AABB2D(glm::vec2 A, glm::vec2 B);
+  AABB(glm::vec2 A, glm::vec2 B);
 
   /// <summary>
   /// Check if two boxes are coliding (overlapping)
   /// </summary>
   /// <param name="other">The box to check against</param>
   /// <returns>true if the two boxes are coliding, false otherwise</returns>
-  bool IsColliding(const AABB2D *other);
+  bool IsColliding(const AABB *other);
 
   /// <summary>
   /// Check if this box will collide with other box given a velocity
@@ -33,7 +33,7 @@ public:
   /// <param name="step">the movement vector of this</param>
   /// <param name="out">maximum seperating vector for collision</param>
   /// <returns>the face on which the collision happened</returns>
-  FaceAABB2D WillCollide(const AABB2D* other, const glm::vec2 step, glm::vec2* &out);
+  FaceAABB WillCollide(const AABB* other, const glm::vec2 step, glm::vec2 &out);
 
   /// <summary>
   /// Get the upper left corner of this box
@@ -46,6 +46,17 @@ public:
   /// </summary>
   /// <returns></returns>
   glm::vec2 GetB();
+
+  //! @brief set the upper left corner of this box
+  //! 
+  //! @param a the upper left corner
+  void SetA(const glm::vec2& a);
+
+  /// <summary>
+  /// Verify that the internal state of this AABB is valid
+  /// </summary>
+  /// <returns>true if valid, false otherwise</returns>
+  bool VerifyState();
 
 private:
   glm::vec2 A; 
