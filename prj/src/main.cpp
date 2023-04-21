@@ -27,6 +27,7 @@
 // project headers
 #include "shader.h"
 #include "stb_image.h"
+#include "models.h"
 
 void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void ProcessInput(GLFWwindow* window);
@@ -36,6 +37,8 @@ const unsigned int kScreenHeight = 600;
 const char* kWindowTitle = "Game";
 
 int main() {
+  
+  // make the glfw window
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -54,17 +57,27 @@ int main() {
     return -1;
   }
  
-  
   glViewport(0, 0, kScreenWidth, kScreenHeight);
   glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
+
+  
+
+  Shader shader(".\\res\\shaders\\vertex_shader.vert", ".\\res\\shaders\\fragment_shader.frag");
+
+  mod::Quad quad = mod::Quad();
 
   while (!glfwWindowShouldClose(window)) {
 
     ProcessInput(window);
 
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    shader.use();
+    quad.Select();
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glfwSwapBuffers(window);
     glfwPollEvents();
     
   }

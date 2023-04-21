@@ -157,6 +157,7 @@
   <ItemGroup>
     <ClCompile Include="src\AABB2D.cc" />
     <ClCompile Include="res\glad.c" />
+    <ClCompile Include="src\models.h" />
     <ClCompile Include="src\stb_image.cpp" />
     <_EmbedManagedResourceFile Include="res\shaders\vertex_shader.vert">
       <FileType>Document</FileType>

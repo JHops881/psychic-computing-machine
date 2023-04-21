@@ -5,6 +5,7 @@
     <ClCompile Include="res\glad.c" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\AABB2D.cc" />
+    <ClCompile Include="src\models.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\shader.h" />
