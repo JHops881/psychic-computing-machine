@@ -25,8 +25,9 @@
 #include <glm/glm/gtc/type_ptr.hpp>
 
 // project headers
+#include "stb_image.h" // not mine
+
 #include "shader.h"
-#include "stb_image.h"
 #include "models.h"
 #include "player.h"
 
@@ -181,6 +182,7 @@ void ProcessInput(GLFWwindow* window, plr::Player& player) {
 
 }
 
+// https://github.com/glfw/glfw/issues/310 | sagaceilo commented on Jun 21, 2014
 bool glfwSetWindowCenter(GLFWwindow* window) {
   if (!window)
     return false;

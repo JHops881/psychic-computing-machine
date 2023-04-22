@@ -75,7 +75,7 @@ namespace mod {
              0.5f, -0.5f,  0.5f,  //FBR front bottom right [2]
             -0.5f, -0.5f,  0.5f,  //FBL front bottom left  [3]
 
-           - 0.5f,  0.5f, -0.5f,  //BTL back top left      [4]
+            -0.5f,  0.5f, -0.5f,  //BTL back top left      [4]
              0.5f,  0.5f, -0.5f,  //BTR back top right     [5]
              0.5f, -0.5f, -0.5f,  //BBR back bottom right  [6]
             -0.5f, -0.5f, -0.5f   //BBL back bottom left   [7]
