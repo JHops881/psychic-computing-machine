@@ -111,20 +111,42 @@ int main() {
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   // game loop
+
+  
+  double last_loop_time;
+  double total_time = 0;
+  const double time_between_updates = (1.0 / 60.0);
+  double start_time = 0;
+  double end_time = 0;
+
   while (!glfwWindowShouldClose(window)) {
 
-    // make key input do stuff
-    ProcessInput(window, player);
+    last_loop_time = end_time - start_time;
+    start_time = glfwGetTime();
+    total_time += last_loop_time;
 
+    while (total_time >= time_between_updates) {
+      // update
+      // grab key input from GLFW
+      glfwPollEvents();
+
+      // make key input do stuff
+      ProcessInput(window, player);
+
+      total_time -= time_between_updates;
+    }
+
+    //draw
+  
     // select the shader
     shader.use();
 
-   
+
     // flush the screen and the buffers
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
- 
+
 
     // defining the view matrix per frame because it changes with movement
     glm::mat4 view_mat = glm::mat4(1.0f);
@@ -136,19 +158,17 @@ int main() {
 
     // draw all the cubes
     cube.Select();
-    for (int i = 0; i < 10; i++) {
-        glm::mat4 model_mat = glm::mat4(1.0f);
-        model_mat = glm::translate(model_mat, cubes_pos[i]);
-        shader.SetMat4fv("model", model_mat);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    for (glm::vec3& pos : cubes_pos) {
+      glm::mat4 model_mat = glm::mat4(1.0f);
+      model_mat = glm::translate(model_mat, pos);
+      shader.SetMat4fv("model", model_mat);
+      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     }
 
-    
     // swap frame buffer
     glfwSwapBuffers(window);
-    // grab key input from GLFW
-    glfwPollEvents();
     
+    end_time = glfwGetTime();    
   }
 
   // kill glfw and free the resources
@@ -169,15 +189,15 @@ void ProcessInput(GLFWwindow* window, plr::Player& player) {
     glfwSetWindowShouldClose(window, true);
   }
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, 0.05f, 0.0f));
+    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f));
   }
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(-0.05f, 0.0f, 0.0f));
+    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f));
   }
   if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, -0.05f, 0.0f));
+    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f));
   }if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.05f, 0.0f, 0.0f));
+    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f));
   }
 
 }
