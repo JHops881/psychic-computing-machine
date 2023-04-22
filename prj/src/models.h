@@ -97,8 +97,8 @@ namespace mod {
             1, 0, 4, // north face
             1, 4, 5,
 
-            4, 5, 6, // back face    
-            4, 6, 7
+            6, 5, 4, // back face    
+            7, 6, 4
           };
 
           glGenVertexArrays(1, &vao_);

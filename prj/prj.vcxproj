@@ -175,6 +175,7 @@
     <ClInclude Include="include\AABB2D.h" />
     <ClInclude Include="include\PhysicsEnv.h" />
     <ClInclude Include="include\PhysicsObj.h" />
+    <ClInclude Include="src\player.h" />
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\stb_image.h" />
   </ItemGroup>

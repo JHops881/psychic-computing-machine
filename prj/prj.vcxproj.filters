@@ -13,6 +13,7 @@
     <ClInclude Include="include\PhysicsEnv.h" />
     <ClInclude Include="include\PhysicsObj.h" />
     <ClInclude Include="include\AABB2D.h" />
+    <ClInclude Include="src\player.h" />
   </ItemGroup>
   <ItemGroup>
     <_EmbedManagedResourceFile Include="res\shaders\fragment_shader.frag" />
