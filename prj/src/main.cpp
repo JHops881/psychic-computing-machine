@@ -63,19 +63,61 @@ int main() {
   
 
   Shader shader(".\\res\\shaders\\vertex_shader.vert", ".\\res\\shaders\\fragment_shader.frag");
+  shader.use();
 
   mod::Quad quad = mod::Quad();
+  mod::Cube cube = mod::Cube();
+
+  glm::vec3 cubes_pos[] = {
+      glm::vec3(3.0f, 0.0f, 0.0f),
+      glm::vec3(3.0f, 1.0f, 0.0f),
+      glm::vec3(3.0f, 3.0f, 0.0f),
+      glm::vec3(3.0f, 4.0f, 0.0f),
+      glm::vec3(2.0f, 4.0f, 0.0f),
+      glm::vec3(1.0f, 4.0f, 0.0f),
+      glm::vec3(0.0f, 4.0f, 0.0f),
+      glm::vec3(-2.0f, 4.0f, 0.0f),
+      glm::vec3(-3.0f, 4.0f, 0.0f),
+      glm::vec3(-3.0f, 3.0f, 0.0f)
+  };
+    
+  glm::mat4 view_mat = glm::mat4(1.0f);
+  view_mat = glm::translate(view_mat, glm::vec3(0.0f, 0.0f, -6.0f));
+
+  glm::mat4 projection_mat = glm::mat4(1.0f);
+  projection_mat = glm::perspective(glm::radians(80.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+  shader.SetMat4fv("view", view_mat);
+  shader.SetMat4fv("projection", projection_mat);
+
+  glEnable(GL_DEPTH_TEST);
 
   while (!glfwWindowShouldClose(window)) {
 
     ProcessInput(window);
 
     glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader.use();
+
     quad.Select();
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    {
+        glm::mat4 model_mat = glm::mat4(1.0f);
+        model_mat = glm::translate(model_mat, glm::vec3(0.0f, 0.0f,0.0f));
+        shader.SetMat4fv("model", model_mat);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    cube.Select();
+    for (int i = 0; i < 10; i++) {
+        glm::mat4 model_mat = glm::mat4(1.0f);
+        model_mat = glm::translate(model_mat, cubes_pos[i]);
+        shader.SetMat4fv("model", model_mat);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+    }
+
+    
 
     glfwSwapBuffers(window);
     glfwPollEvents();

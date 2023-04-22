@@ -155,7 +155,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AABB2D.cc" />
+    <ClCompile Include="src\AABB2D.cc">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="res\glad.c" />
     <ClCompile Include="src\models.h" />
     <ClCompile Include="src\stb_image.cpp" />
