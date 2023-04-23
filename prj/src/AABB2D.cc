@@ -1,13 +1,14 @@
 #include <stdexcept>
+#include <format>
 
-#include "../include/AABB2D.h"
+#include "AABB.h"
 
-AABB::AABB(glm::vec2 A, glm::vec2 B) noexcept(std::invalid_argument)
+AABB::AABB(glm::vec2 A, glm::vec2 B)
   : A(A), B(B)
 {
   if (not this->VerifyState()) {
     throw std::invalid_argument(std::format("Invalid verticies for AABB. A={} B={}", 
-      this->GetA(), this->GetB()))
+      this->GetA(), this->GetB()));
   }
 }
 
