@@ -155,12 +155,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\my_glfw_callbacks.h" />
     <ClCompile Include="src\AABB2D.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="res\glad.c" />
-    <ClCompile Include="src\models.h" />
-    <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="include\models.h" />
+    <ClCompile Include="src\my_glfw_callbacks.cpp" />
+    <ClCompile Include="src\process_input.cpp" />
+    <ClCompile Include="res\stb_image.cpp" />
     <_EmbedManagedResourceFile Include="res\shaders\vertex_shader.vert">
       <FileType>Document</FileType>
     </_EmbedManagedResourceFile>
@@ -175,10 +178,11 @@
     <ClInclude Include="include\AABB2D.h" />
     <ClInclude Include="include\PhysicsEnv.h" />
     <ClInclude Include="include\PhysicsObj.h" />
-    <ClInclude Include="src\player.h" />
-    <ClInclude Include="src\shader.h" />
-    <ClInclude Include="src\stb_image.h" />
-    <ClInclude Include="src\terrain.h" />
+    <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\process_input.h" />
+    <ClInclude Include="include\shader.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png" />

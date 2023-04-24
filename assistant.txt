@@ -1,0 +1,16 @@
+
+OVERVIEW:
+    play from a bird's eye, controlling a lone warehouse store employee in an
+    infinite warehouse store. throw infinite spinnig pallets at enemies while clearing rooms and collecting loot. clear as many rooms as you desire while the enemies get harder as you go. create a new world and go! play with your friends.
+
+    inspiration:
+        Terraria
+        Bubble Tanks Series
+        Enter the Gungeon
+        Hero Seige
+
+FEATURES TODO:
+
+    - ONLY LOAD IN THE PART OF THE MAP THAT YOU CAN SEE AS YOU GO
+
+    - CULL FACES THAT ARE NOT VISIBLE
