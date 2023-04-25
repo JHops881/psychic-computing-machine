@@ -42,9 +42,39 @@ void Render(GLFWwindow* window, player::Player& player,
 
 int main() {
 
-  const unsigned int kScreenWidth = 1920;
-  const unsigned int kScreenHeight = 1080;
+  unsigned int screen_width{};
+  unsigned int screen_height{};
   const char* kWindowTitle = "Game";
+
+  std::cout << "Please select a resolution: \n\n";
+  std::cout << "'a' for 1920x1080.\n";
+  std::cout << "'b' for 1366x768.\n";
+
+  bool gotten_valid_input = false;
+
+  while (!gotten_valid_input)
+  {
+    std::string input;
+    std::cin >> input;
+    
+    
+    if (input == "a") {
+      screen_width = 1980;
+      screen_height = 1080;
+      gotten_valid_input = true;
+    }
+    else if (input == "b") {
+      screen_width = 1366;
+      screen_height = 768;
+      gotten_valid_input = true;
+    }
+    else {
+      std::cout << "??? try again: " << std::endl;
+    }
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+  }
+
 
   
   // make the glfw window, init glfw, init glad, error handling, start openGL
@@ -56,7 +86,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);              //
                                                                               //
                                                                               //
-  GLFWwindow* window = glfwCreateWindow(kScreenWidth, kScreenHeight,          //
+  GLFWwindow* window = glfwCreateWindow(screen_width, screen_height,          //
     kWindowTitle, glfwGetPrimaryMonitor(), NULL);                             //
                                                                               //
   if (window == NULL) {                                                       //
@@ -71,7 +101,7 @@ int main() {
     return -1;                                                                //
   }                                                                           //
                                                                               //
-  glViewport(0, 0, kScreenWidth, kScreenHeight);                              //
+  glViewport(0, 0, screen_width, screen_height);                              //
   glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);            //
   glfwSetMouseButtonCallback(window, MouseButtonCallback);                    //
                                                                               //
@@ -95,7 +125,7 @@ int main() {
   // defining the projection matrix
   glm::mat4 projection_mat = glm::mat4(1.0f);
 
-  float aspect_ratio = (float)kScreenWidth / (float)kScreenHeight;
+  float aspect_ratio = (float)screen_width / (float)screen_height;
 
   projection_mat = 
     glm::perspective(glm::radians(80.0f), aspect_ratio , 0.1f, 100.0f);
