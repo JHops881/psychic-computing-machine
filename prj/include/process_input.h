@@ -6,6 +6,6 @@
 
 #include "../include/player.h"
 
-void ProcessInput(GLFWwindow* window, plr::Player& player);
+void ProcessInput(GLFWwindow* window, player::Player& player);
 
 #endif

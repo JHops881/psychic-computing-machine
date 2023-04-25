@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 
-namespace mod {
+namespace models {
 
   class Quad {
 
@@ -60,7 +60,7 @@ namespace mod {
 
   };
 
-  class Cube {
+  class Wall {
 
   private:
 
@@ -70,14 +70,14 @@ namespace mod {
 
   public:
 
-    Cube() {
+    Wall() {
 
       float vertex_data[] = {
         // position attr
-        -0.5f,  0.5f,  1.5f,  //FTL front top left     [0]
-         0.5f,  0.5f,  1.5f,  //FTR front top right    [1]
-         0.5f, -0.5f,  1.5f,  //FBR front bottom right [2]
-        -0.5f, -0.5f,  1.5f,  //FBL front bottom left  [3]
+        -0.5f,  0.5f,  2.5f,  //FTL front top left     [0]
+         0.5f,  0.5f,  2.5f,  //FTR front top right    [1]
+         0.5f, -0.5f,  2.5f,  //FBR front bottom right [2]
+        -0.5f, -0.5f,  2.5f,  //FBL front bottom left  [3]
 
         -0.5f,  0.5f,  0.0f,  //BTL back top left      [4]
          0.5f,  0.5f,  0.0f,  //BTR back top right     [5]
@@ -99,10 +99,10 @@ namespace mod {
         0, 7, 4,
 
         1, 0, 4, // north face
-        1, 4, 5,
+        1, 4, 5//,
 
-        6, 5, 4, // back face    
-        7, 6, 4
+        //6, 5, 4, // back face    
+        //7, 6, 4
       };
 
       glGenVertexArrays(1, &vao_);

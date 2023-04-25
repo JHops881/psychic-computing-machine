@@ -27,14 +27,17 @@
 // project headers
 #include "../include/stb_image.h" // not mine
 
-#include "../include/shader.h"
+#include "../include/shader_obj.h"
 #include "../include/models.h"
 #include "../include/player.h"
 #include "../include/process_input.h"
 #include "../include/my_glfw_callbacks.h"
+#include "../include/terrain_graphics_handling.h"
 
 inline unsigned int ToMillis(double time);
-
+void FixedUpdate(GLFWwindow* window, player::Player& player);
+void Render(GLFWwindow* window, player::Player& player,
+  shader_obj::Shader& shader, models::Wall& wall);
 
 
 int main() {
@@ -70,39 +73,24 @@ int main() {
                                                                               //
   glViewport(0, 0, kScreenWidth, kScreenHeight);                              //
   glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);            //
+  glfwSetMouseButtonCallback(window, MouseButtonCallback);                    //
                                                                               //
   //--------------------------------------------------------------------------++
    
   // create player
-  plr::Player player = plr::Player();
+  player::Player player = player::Player();
 
   // create the shader program
-  Shader shader(
+  shader_obj::Shader shader(
     ".\\res\\shaders\\vertex_shader.vert",
     ".\\res\\shaders\\fragment_shader.frag");
 
   // select the shader program
   shader.use();
 
-  // load in the cube model
-  mod::Cube cube = mod::Cube();
+  // load in the wall model
+  models::Wall wall = models::Wall();
 
-  // list of all the positions we want to make a cube
-  glm::vec3 cubes_pos[] = {
-      glm::vec3(3.0f, 0.0f, 0.0f),
-      glm::vec3(3.0f, 1.0f, 0.0f),
-      glm::vec3(3.0f, 3.0f, 0.0f),
-      glm::vec3(3.0f, 4.0f, 0.0f),
-      glm::vec3(2.0f, 4.0f, 0.0f),
-      glm::vec3(1.0f, 4.0f, 0.0f),
-      glm::vec3(4.0f, 4.0f, 0.0f),
-      glm::vec3(-2.0f, 4.0f, 0.0f),
-      glm::vec3(-3.0f, 4.0f, 0.0f),
-      glm::vec3(-3.0f, 3.0f, 0.0f)
-  };
-
-  
-  
 
   // defining the projection matrix
   glm::mat4 projection_mat = glm::mat4(1.0f);
@@ -126,74 +114,36 @@ int main() {
   // wirecframe mode!
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  // game loop
+  //------------------------------GAME-LOOP-----------------------------------++
+
+  unsigned int last_loop_time;
+  unsigned int total_time = 0;
+  const unsigned int time_between_updates = ToMillis((1.0 / 60.0));
+  unsigned int start_time = 0;
+  unsigned int end_time = 0;
+
+  while (!glfwWindowShouldClose(window)) {
+
+    last_loop_time = end_time - start_time;
+    start_time = ToMillis(glfwGetTime());
+    total_time += last_loop_time;
+
+    while (total_time >= time_between_updates) {
+
+      // update
+      FixedUpdate(window, player);
+      total_time -= time_between_updates;
+    }
+
+    // render
+    // TODO: fixed update                                                   
+    Render(window, player, shader, wall);
+
+   
+    end_time = ToMillis(glfwGetTime());
+  } 
   //--------------------------------------------------------------------------++
-                                                                              //
-  unsigned int last_loop_time;                                                //
-  unsigned int total_time = 0;                                                //
-  const unsigned int time_between_updates = ToMillis((1.0 / 60.0));           //
-  unsigned int start_time = 0;                                                //
-  unsigned int end_time = 0;                                                  //
-                                                                              //
-  while (!glfwWindowShouldClose(window)) {                                    //
-                                                                              //
-    last_loop_time = end_time - start_time;                                   //
-    start_time = ToMillis(glfwGetTime());                                     //
-    total_time += last_loop_time;                                             //
-                                                                              //
-    while (total_time >= time_between_updates) {                              //
-      // update                                                               //
-      // grab key input from GLFW                                             //
-      glfwPollEvents();                                                       //
-                                                                              //
-      // make key input do stuff                                              //
-      ProcessInput(window, player);                                           //
-                                                                              //
-      total_time -= time_between_updates;                                     //
-    }                                                                         //
-                                                                              //
-    //draw                                                                    //
-                                                                              //
-    // select the shader                                                      //
-    shader.use();                                                             //
-                                                                              //
-                                                                              //
-    // flush the screen and the buffers                                       //
-    glClearColor(0.5f, 0.5f, 0.5f, 1.0f);                                     //
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);                       //
-                                                                              //
-                                                                              //
-                                                                              //
-    // defining the view matrix per                                           //
-    // frame because it changes with movement                                 //
-    glm::mat4 view_mat = glm::mat4(1.0f);                                     //
-    view_mat =                                                                //
-      glm::translate(                                                         //
-        view_mat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.GetPos())          //
-        );                                                                    //
-                                                                              //
-    shader.SetMat4fv("view", view_mat);                                       //
-                                                                              //
-    // player                                                                 //
-    player.Draw(shader);                                                      //
-                                                                              //
-    // draw all the cubes                                                     //
-    cube.Select();                                                            //
-    for (glm::vec3& pos : cubes_pos) {                                        //
-      glm::mat4 model_mat = glm::mat4(1.0f);                                  //
-                                                                              //
-      model_mat = glm::translate(model_mat, pos);                             //
-      shader.SetMat4fv("model", model_mat);                                   //
-      glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);                   //
-    }                                                                         //
-                                                                              //
-    // swap frame buffer                                                      //
-    glfwSwapBuffers(window);                                                  //
-                                                                              //
-    end_time = ToMillis(glfwGetTime());                                       //
-  }                                                                           //
-  //--------------------------------------------------------------------------++
-  
+ 
   // kill glfw and free the resources
   glfwTerminate();
   return 0;
@@ -202,4 +152,42 @@ int main() {
 inline unsigned int ToMillis(double time) {
   unsigned int milliseconds = static_cast<unsigned int>(time * 1000);
   return milliseconds;
+}
+
+void Update(){
+
+}
+
+void FixedUpdate(GLFWwindow* window, player::Player& player) {
+  // grab key input from GLFW
+  glfwPollEvents();
+
+  // make key input do stuff
+  ProcessInput(window, player);
+}
+
+void Render(GLFWwindow* window, player::Player& player,
+  shader_obj::Shader& shader, models::Wall& wall)
+{  
+  // select the shader             
+  shader.use();       
+         
+  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);                           
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
+  // defining the view matrix per                                       
+  // frame because it changes with movement                       
+  glm::mat4 view_mat = glm::mat4(1.0f);                                 
+  view_mat =                                                             
+    glm::translate(
+      view_mat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.GetPos())       
+    );                                                                 
+
+  shader.SetMat4fv("view", view_mat); 
+  
+  player.Draw(shader);
+                                                            
+  tgh::DrawVisibleWalls(shader, wall);                                                                        //
+
+  glfwSwapBuffers(window);
 }

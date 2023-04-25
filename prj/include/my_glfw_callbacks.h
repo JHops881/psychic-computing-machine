@@ -6,6 +6,7 @@
 
 void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos);
+void MouseButtonCallback(GLFWwindow* window, int button, int actions, int mods);
 
 
 #endif

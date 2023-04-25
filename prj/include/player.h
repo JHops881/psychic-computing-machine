@@ -10,15 +10,15 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 
 #include "models.h"
-#include "shader.h"
+#include "shader_obj.h"
 
-namespace plr {
+namespace player {
 
   class Player {
 
   private:
 
-    mod::Quad model = mod::Quad();
+    models::Quad model = models::Quad();
     glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
 
   public:
@@ -30,11 +30,11 @@ namespace plr {
   private:
 
   public:
-    glm::vec3 GetPos() {
+    inline glm::vec3 GetPos() const {
       return pos;
     }
 
-    void Draw(Shader shader) {
+    void Draw(shader_obj::Shader& shader) {
       shader.use();
       model.Select();
       glm::mat4 model_mat = glm::mat4(1.0f);
@@ -55,7 +55,7 @@ namespace plr {
   class Projectile {
   public:
 
-    mod::Quad model_{ mod::Quad() };
+    models::Quad model_{ models::Quad() };
     glm::vec3 pos_{ glm::vec3(0.0f, 0.0f, 0.0f) };
     glm::vec3 endpos_{ glm::vec3(0.0f, 0.0f, 0.0f) };
     glm::mat4 matrix_{ glm::mat4(1.0f) };
@@ -80,7 +80,7 @@ namespace plr {
 
     Projectile() {}
 
-    void Draw(Shader shader) {
+    void Draw(shader_obj::Shader& shader) {
       shader.use();
       model_.Select();
       glm::mat4 model_mat = glm::mat4(1.0f);

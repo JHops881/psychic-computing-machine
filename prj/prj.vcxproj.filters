@@ -8,15 +8,16 @@
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\process_input.cpp" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
+    <ClCompile Include="src\terrain_graphics_handling.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\shader.h" />
+    <ClInclude Include="include\shader_obj.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\PhysicsEnv.h" />
     <ClInclude Include="include\PhysicsObj.h" />
     <ClInclude Include="include\AABB2D.h" />
     <ClInclude Include="include\player.h" />
-    <ClInclude Include="include\terrain.h" />
+    <ClInclude Include="include\terrain_graphics_handling.h" />
     <ClInclude Include="include\process_input.h" />
     <ClInclude Include="include\my_glfw_callbacks.h" />
   </ItemGroup>
