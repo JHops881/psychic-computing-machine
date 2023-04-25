@@ -6,7 +6,6 @@
     <ClCompile Include="res\stb_image.cpp" />
     <ClCompile Include="src\AABB2D.cc" />
     <ClCompile Include="include\models.h" />
-    <ClCompile Include="src\process_input.cpp" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
     <ClCompile Include="src\terrain_graphics_handling.cpp" />
   </ItemGroup>
@@ -18,7 +17,6 @@
     <ClInclude Include="include\AABB2D.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\terrain_graphics_handling.h" />
-    <ClInclude Include="include\process_input.h" />
     <ClInclude Include="include\my_glfw_callbacks.h" />
   </ItemGroup>
   <ItemGroup>

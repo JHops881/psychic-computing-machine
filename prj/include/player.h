@@ -13,13 +13,14 @@
 #include "shader_obj.h"
 
 namespace player {
-
+  
   class Player {
 
   private:
-
-    models::Quad model = models::Quad();
-    glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    
+    models::Quad model_ = models::Quad();
+    glm::vec3 pos_ = glm::vec3(0.0f, 0.0f, 0.0f);
+    float rotation_ = 0.0f;
 
   public:
     
@@ -31,20 +32,25 @@ namespace player {
 
   public:
     inline glm::vec3 GetPos() const {
-      return pos;
+      return pos_;
+    }
+    inline void SetRotation(float angle) {
+      rotation_ = angle;
     }
 
     void Draw(shader_obj::Shader& shader) {
       shader.use();
-      model.Select();
+      model_.Select();
       glm::mat4 model_mat = glm::mat4(1.0f);
-      model_mat = glm::translate(model_mat, pos);
+      model_mat = glm::translate(model_mat, pos_);
+      model_mat = glm::rotate(model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+      
       shader.SetMat4fv("model", model_mat);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
     
     void MoveAmount(glm::vec3 amount) {
-      pos += amount;
+      pos_ += amount;
     }
 
   

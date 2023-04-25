@@ -16,6 +16,7 @@
 // std headers
 #include <iostream>
 #include <string>
+#include <cmath>
 
 // library headers
 #include <glad/glad.h>
@@ -30,11 +31,12 @@
 #include "../include/shader_obj.h"
 #include "../include/models.h"
 #include "../include/player.h"
-#include "../include/process_input.h"
 #include "../include/my_glfw_callbacks.h"
 #include "../include/terrain_graphics_handling.h"
 
 inline unsigned int ToMillis(double time);
+void Update(GLFWwindow* window, player::Player& player,
+  double time_between_updates, double total_time, double last_frame_update_time);
 void FixedUpdate(GLFWwindow* window, player::Player& player);
 void Render(GLFWwindow* window, player::Player& player,
   shader_obj::Shader& shader, models::Wall& wall);
@@ -59,7 +61,7 @@ int main() {
     
     
     if (input == "a") {
-      screen_width = 1980;
+      screen_width = 1920;
       screen_height = 1080;
       gotten_valid_input = true;
     }
@@ -132,45 +134,42 @@ int main() {
 
   shader.SetMat4fv("projection", projection_mat);
 
-  // enable depth testing with the z-buffer
-  // with openGL so we dont get weird stuff
-  glEnable(GL_DEPTH_TEST);
-
-  // enable face culling. OpenGL will cull all faces of 
-  // objects that are not front facing. saves 50% performance. 
-  glEnable(GL_CULL_FACE);
-  glFrontFace(GL_CW);
-  glCullFace(GL_BACK);
-  // wirecframe mode!
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  models::TurnOnOpenGLDepthTesting();
+  models::TurnOnClockwiseOpenGLFaceCulling();
+  models::TurnOnOpenGLWireframeMode();
 
   //------------------------------GAME-LOOP-----------------------------------++
 
-  unsigned int last_loop_time;
-  unsigned int total_time = 0;
-  const unsigned int time_between_updates = ToMillis((1.0 / 60.0));
-  unsigned int start_time = 0;
-  unsigned int end_time = 0;
+  double last_loop_time;
+  double total_time = 0.0;
+  constexpr double time_between_updates = (1.0 / 60.0);
+  double last_frame_update_time = 0.0;
+  double last_fixed_update_time = 0.0;
+  double start_time = 0.0;
+  double end_time = 0.0;
+  
 
   while (!glfwWindowShouldClose(window)) {
 
     last_loop_time = end_time - start_time;
-    start_time = ToMillis(glfwGetTime());
+    start_time = glfwGetTime();
     total_time += last_loop_time;
 
     while (total_time >= time_between_updates) {
 
       // update
       FixedUpdate(window, player);
+      last_fixed_update_time = glfwGetTime();
       total_time -= time_between_updates;
     }
 
     // render
-    // TODO: fixed update                                                   
+    //Update(window, player, time_between_updates, total_time, last_frame_update_time);
+    last_frame_update_time = glfwGetTime() - last_fixed_update_time;
     Render(window, player, shader, wall);
 
    
-    end_time = ToMillis(glfwGetTime());
+    end_time = glfwGetTime();
   } 
   //--------------------------------------------------------------------------++
  
@@ -179,22 +178,79 @@ int main() {
   return 0;
 }
 
-inline unsigned int ToMillis(double time) {
-  unsigned int milliseconds = static_cast<unsigned int>(time * 1000);
-  return milliseconds;
+
+
+
+
+// called every frame
+void Update(GLFWwindow* window, player::Player& player,
+  double time_between_updates, double total_time, 
+  double last_frame_update_time)
+{
+  float interval_p =static_cast<float>(
+    (total_time - last_frame_update_time) / time_between_updates);
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f) * interval_p);
+  }
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f) * interval_p);
+  }
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f) * interval_p);
+  }
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f) * interval_p);
+  }
 }
 
-void Update(){
 
-}
 
+
+
+// called ?? times a seccond at a fixed rate
 void FixedUpdate(GLFWwindow* window, player::Player& player) {
   // grab key input from GLFW
   glfwPollEvents();
 
   // make key input do stuff
-  ProcessInput(window, player);
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, true);
+  }
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f));
+  }
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f));
+  }
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f));
+  }
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f));
+  }
+  double mouse_posx, mouse_posy;
+  glfwGetCursorPos(window, &mouse_posx, &mouse_posy);
+  int width, height;
+  glfwGetWindowSize(window, &width, &height);
+  mouse_posy = height - mouse_posy;
+  int player_posx = width/2;
+  int player_posy = height/2;
+
+  int look_directionx = mouse_posx - player_posx;
+  int look_directiony = mouse_posy - player_posy;
+
+  constexpr double NDIR = glm::radians(90.0f);
+
+  double angle = atan2(look_directiony, look_directionx) - NDIR;
+
+  player.SetRotation(angle);
+  
 }
+
+
+
+
+
 
 void Render(GLFWwindow* window, player::Player& player,
   shader_obj::Shader& shader, models::Wall& wall)

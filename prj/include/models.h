@@ -3,9 +3,13 @@
 
 #include <glad/glad.h>
 
-
+// models contains all the 2D and 3D graphical objects
+// that are used in the game.
 namespace models {
 
+
+
+  // the Quad class is just a square
   class Quad {
 
   private:
@@ -60,6 +64,10 @@ namespace models {
 
   };
 
+
+
+  // The wall class defines a 3D graphical object that will
+  // display be a wall when selected and drawn by openGL
   class Wall {
 
   private:
@@ -133,6 +141,27 @@ namespace models {
     }
 
   };
+
+  // enable depth testing with the z-buffer
+  // with openGL so we dont get weird stuff
+  inline void TurnOnOpenGLDepthTesting() {
+    glEnable(GL_DEPTH_TEST);
+  }
+  
+
+  // enable face culling. OpenGL will cull all faces of 
+  // objects that are not front facing. saves 50% performance.
+  inline void TurnOnClockwiseOpenGLFaceCulling() {
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
+  }
+  
+  // wirecframe mode!
+  inline void TurnOnOpenGLWireframeMode() {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  }
+  
 
 }
 

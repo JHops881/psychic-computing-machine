@@ -163,7 +163,6 @@
     <ClCompile Include="res\glad.c" />
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
-    <ClCompile Include="src\process_input.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
     <_EmbedManagedResourceFile Include="res\shaders\vertex_shader.vert">
       <FileType>Document</FileType>
@@ -180,7 +179,6 @@
     <ClInclude Include="include\PhysicsEnv.h" />
     <ClInclude Include="include\PhysicsObj.h" />
     <ClInclude Include="include\player.h" />
-    <ClInclude Include="include\process_input.h" />
     <ClInclude Include="include\shader_obj.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\terrain_graphics_handling.h" />

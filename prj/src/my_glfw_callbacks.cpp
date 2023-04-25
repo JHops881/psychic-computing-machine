@@ -15,13 +15,12 @@ void FrameBufferSizeCallback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 void MouseButtonCallback(GLFWwindow* window, int button, int actions, int mods) {
-
-}
-void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
   if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
     double xpos;
     double ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-   
   }
+}
+void CursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+  
 }
