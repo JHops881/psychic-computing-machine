@@ -16,7 +16,7 @@ namespace shader_obj{
 
   public:
 
-    unsigned int id_;
+    unsigned int id_{};
 
   private:
 
@@ -78,6 +78,7 @@ namespace shader_obj{
 
   public:
 
+
     Shader(const char* vertex_path, const char* fragment_path) {
 
       // this will store the corresponding shaders code as a string
@@ -117,6 +118,8 @@ namespace shader_obj{
       id_ = CreateProgram(vertex_cstr, fragment_cstr);
 
     }
+
+    Shader() {}
 
     void use() {
       glUseProgram(id_);

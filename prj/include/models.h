@@ -145,21 +145,19 @@ namespace models {
   // enable depth testing with the z-buffer
   // with openGL so we dont get weird stuff
   inline void TurnOnOpenGLDepthTesting() {
-    glEnable(GL_DEPTH_TEST);
+    
   }
   
 
   // enable face culling. OpenGL will cull all faces of 
   // objects that are not front facing. saves 50% performance.
   inline void TurnOnClockwiseOpenGLFaceCulling() {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
+    
   }
   
   // wirecframe mode!
   inline void TurnOnOpenGLWireframeMode() {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   
   }
   
 

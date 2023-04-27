@@ -34,9 +34,13 @@
 #include "../include/my_glfw_callbacks.h"
 #include "../include/terrain_graphics_handling.h"
 
-inline unsigned int ToMillis(double time);
-void Update(GLFWwindow* window, player::Player& player,
-  double time_between_updates, double total_time, double last_frame_update_time);
+void Update(
+  GLFWwindow* window, 
+  player::Player& player,
+  double time_between_updates, 
+  double total_time, 
+  double last_frame_update_time
+  );
 void FixedUpdate(GLFWwindow* window, player::Player& player);
 void Render(GLFWwindow* window, player::Player& player,
   shader_obj::Shader& shader, models::Wall& wall);
@@ -109,16 +113,17 @@ int main() {
                                                                               //
   //--------------------------------------------------------------------------++
    
-  // create player
-  player::Player player = player::Player();
+  
 
   // create the shader program
-  shader_obj::Shader shader(
+  shader_obj::Shader general_shader(
     ".\\res\\shaders\\vertex_shader.vert",
     ".\\res\\shaders\\fragment_shader.frag");
 
   // select the shader program
-  shader.use();
+  general_shader.use();
+
+  player::Player player_one = player::Player(general_shader);
 
   // load in the wall model
   models::Wall wall = models::Wall();
@@ -129,14 +134,18 @@ int main() {
 
   float aspect_ratio = (float)screen_width / (float)screen_height;
 
-  projection_mat = 
-    glm::perspective(glm::radians(80.0f), aspect_ratio , 0.1f, 100.0f);
+  projection_mat = glm::perspective(
+    glm::radians(80.0f), aspect_ratio, 0.1f, 100.0f);
 
-  shader.SetMat4fv("projection", projection_mat);
+  general_shader.SetMat4fv("projection", projection_mat);
 
-  models::TurnOnOpenGLDepthTesting();
-  models::TurnOnClockwiseOpenGLFaceCulling();
-  models::TurnOnOpenGLWireframeMode();
+  glEnable(GL_DEPTH_TEST);
+
+  glEnable(GL_CULL_FACE);
+  glFrontFace(GL_CW);
+  glCullFace(GL_BACK);
+
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode on
 
   //------------------------------GAME-LOOP-----------------------------------++
 
@@ -158,7 +167,7 @@ int main() {
     while (total_time >= time_between_updates) {
 
       // update
-      FixedUpdate(window, player);
+      FixedUpdate(window, player_one);
       last_fixed_update_time = glfwGetTime();
       total_time -= time_between_updates;
     }
@@ -166,7 +175,7 @@ int main() {
     // render
     //Update(window, player, time_between_updates, total_time, last_frame_update_time);
     last_frame_update_time = glfwGetTime() - last_fixed_update_time;
-    Render(window, player, shader, wall);
+    Render(window, player_one, general_shader, wall);
 
    
     end_time = glfwGetTime();
@@ -182,26 +191,7 @@ int main() {
 
 
 
-// called every frame
-void Update(GLFWwindow* window, player::Player& player,
-  double time_between_updates, double total_time, 
-  double last_frame_update_time)
-{
-  float interval_p =static_cast<float>(
-    (total_time - last_frame_update_time) / time_between_updates);
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f) * interval_p);
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f) * interval_p);
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f) * interval_p);
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f) * interval_p);
-  }
-}
+
 
 
 
@@ -212,48 +202,56 @@ void FixedUpdate(GLFWwindow* window, player::Player& player) {
   // grab key input from GLFW
   glfwPollEvents();
 
-  // make key input do stuff
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
-  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f));
-  }
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f));
-  }
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f));
-  }
-  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f));
-  }
-  double mouse_posx, mouse_posy;
-  glfwGetCursorPos(window, &mouse_posx, &mouse_posy);
-  int width, height;
-  glfwGetWindowSize(window, &width, &height);
-  mouse_posy = height - mouse_posy;
-  int player_posx = width/2;
-  int player_posy = height/2;
 
-  int look_directionx = mouse_posx - player_posx;
-  int look_directiony = mouse_posy - player_posy;
+  player.ProcessMovement(window);
 
-  constexpr double NDIR = glm::radians(90.0f);
-
-  double angle = atan2(look_directiony, look_directionx) - NDIR;
-
-  player.SetRotation(angle);
+  player.ProcessLookingDirection(window);
   
+  player.UpdateProjectiles();
 }
 
 
 
 
 
+//// called every frame
+//void Update(
+//  GLFWwindow*        window,
+//  player::Player&    player,
+//  double             time_between_updates,
+//  double             total_time,
+//  double             last_frame_update_time
+//  )
+//{
+//  float interval_p = static_cast<float>(
+//    (total_time - last_frame_update_time) / time_between_updates);
+//  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+//    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f) * interval_p);
+//  }
+//  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+//    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f) * interval_p);
+//  }
+//  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+//    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f) * interval_p);
+//  }
+//  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+//    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f) * interval_p);
+//  }
+//}
 
-void Render(GLFWwindow* window, player::Player& player,
-  shader_obj::Shader& shader, models::Wall& wall)
+
+
+
+
+void Render(
+  GLFWwindow*            window,
+  player::Player&        player,
+  shader_obj::Shader&    shader,
+  models::Wall&          wall
+  )
 {  
   // select the shader             
   shader.use();       
@@ -271,7 +269,9 @@ void Render(GLFWwindow* window, player::Player& player,
 
   shader.SetMat4fv("view", view_mat); 
   
-  player.Draw(shader);
+  player.Draw();
+
+  player.DrawProjectiles();
                                                             
   tgh::DrawVisibleWalls(shader, wall);                                                                        //
 
