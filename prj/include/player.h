@@ -28,21 +28,20 @@ namespace player {
     class Projectile;
 
    
-    models::Quad    model_     =  models::Quad();
-    glm::vec3       pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
-    float           rotation_  =  0.0f;
+    glm::vec3        pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
+    float            rotation_  =  0.0f;
     
-    shader_obj::Shader current_shader_;
+    shader_obj::Shader& current_shader_;
     std::vector<Projectile> projectiles_;
+    models::Quad& model_;
 
 
   public:
 
-    Player(shader_obj::Shader& shader) 
-      : current_shader_(shader) {
+    Player(shader_obj::Shader& shader, models::Quad& model) 
+      : current_shader_(shader), model_(model) {
     }
 
-    Player() {}
 
 
 

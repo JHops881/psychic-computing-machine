@@ -55,7 +55,7 @@ int main() {
   std::cout << "Please select a resolution: \n\n";
   std::cout << "'a' for 1920x1080.\n";
   std::cout << "'b' for 1366x768.\n";
-
+  
   bool gotten_valid_input = false;
 
   while (!gotten_valid_input)
@@ -123,10 +123,12 @@ int main() {
   // select the shader program
   general_shader.use();
 
-  player::Player player_one = player::Player(general_shader);
-
   // load in the wall model
   models::Wall wall = models::Wall();
+  models::Quad square = models::Quad();
+
+  player::Player player_one = player::Player(general_shader, square);
+
 
 
   // defining the projection matrix
