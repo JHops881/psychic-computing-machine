@@ -121,22 +121,35 @@ namespace shader_obj{
 
     Shader() {}
 
-    void use() {
+    inline void use() {
       glUseProgram(id_);
     }
 
+
+    // note that these uniform setting functions will deselect the
+    // shader in use. always follow unifrom setting function with a 
+    // use() call. 
+
     void SetBool(const std::string& name, bool value) const {
+      glUseProgram(id_);
       glUniform1i(glGetUniformLocation(id_, name.c_str()), (int)value);
+      glUseProgram(0);
     }
     void SetInt(const std::string& name, int value) const {
+      glUseProgram(id_);
       glUniform1i(glGetUniformLocation(id_, name.c_str()), value);
+      glUseProgram(0);
     }
     void SetFloat(const std::string& name, float value) const {
+      glUseProgram(id_);
       glUniform1f(glGetUniformLocation(id_, name.c_str()), value);
+      glUseProgram(0);
     }
     void SetMat4fv(const std::string& name, glm::mat4& mat4) const {
+      glUseProgram(id_);
       unsigned int loc = glGetUniformLocation(id_, name.c_str());
       glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(mat4));
+      glUseProgram(0);
     }
 
 

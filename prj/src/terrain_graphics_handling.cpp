@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unordered_map>
 
 #include <glm/glm/glm.hpp>
 
@@ -52,12 +53,14 @@ namespace tgh {
         
         glm::mat4 model_mat = glm::mat4(1.0f);        
         model_mat = glm::translate(model_mat, pos);                 
-        shader.SetMat4fv("model", model_mat);                     
+        shader.SetMat4fv("model", model_mat);
+
+        shader.use();
         glDrawElements(GL_TRIANGLES, 30, GL_UNSIGNED_INT, 0);  
       }
     }
   }
 
-
+  //std::unordered_map<int[2], models::WallModel> things;
 
 }

@@ -44,6 +44,7 @@ void Update(
 void FixedUpdate(GLFWwindow* window, player::Player& player);
 void Render(GLFWwindow* window, player::Player& player,
   shader_obj::Shader& shader, models::WallModel& wall);
+void SetProjMatrixFor(shader_obj::Shader& shader, float scrn_w, float scrn_h);
 
 
 int main() {
@@ -113,33 +114,35 @@ int main() {
                                                                               //
   //--------------------------------------------------------------------------++
    
-  
+
 
   // create the shader program
   shader_obj::Shader general_shader(
-    ".\\res\\shaders\\vertex_shader.vert",
-    ".\\res\\shaders\\fragment_shader.frag");
+    ".\\res\\shaders\\general.vert",
+    ".\\res\\shaders\\general.frag");
 
-  // select the shader program
-  general_shader.use();
 
-  // load in the wall model
+
+  // load in the models
   models::WallModel wall = models::WallModel();
   models::Quad square = models::Quad();
+
+
+
 
   player::Player player_one = player::Player(general_shader, square);
 
 
 
+
+
   // defining the projection matrix
-  glm::mat4 projection_mat = glm::mat4(1.0f);
+  SetProjMatrixFor(general_shader, screen_width, screen_height);
 
-  float aspect_ratio = (float)screen_width / (float)screen_height;
 
-  projection_mat = glm::perspective(
-    glm::radians(80.0f), aspect_ratio, 0.1f, 100.0f);
 
-  general_shader.SetMat4fv("projection", projection_mat);
+
+
 
   glEnable(GL_DEPTH_TEST);
 
@@ -148,6 +151,9 @@ int main() {
   glCullFace(GL_BACK);
 
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode on
+
+
+
 
   //------------------------------GAME-LOOP-----------------------------------++
 
@@ -214,6 +220,7 @@ void FixedUpdate(GLFWwindow* window, player::Player& player) {
   player.ProcessLookingDirection(window);
   player.ProcessShooting(window);
   player.UpdateProjectiles();
+
 }
 
 
@@ -253,14 +260,13 @@ void Render(
   GLFWwindow*            window,
   player::Player&        player,
   shader_obj::Shader&    shader,
-  models::WallModel&          wall
+  models::WallModel&     wall
   )
 {  
-  // select the shader             
-  shader.use();       
+        
          
   // background color grey
-  glClearColor(0.5f, 0.5f, 0.5f, 1.0f);                           
+  glClearColor(0.09f, 0.06f, 0.09f, 1.0f);                           
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   // defining the view matrix per                                       
@@ -270,13 +276,31 @@ void Render(
     glm::translate(
       view_mat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.GetPos())       
     );                                                                 
-  shader.SetMat4fv("view", view_mat); 
+  shader.SetMat4fv("view", view_mat);
   
+
+  // map::Draw();
 
   player.Draw();
   player.DrawProjectiles();
-                                                            
+ 
+
+  shader.use();
   tgh::DrawVisibleWalls(shader, wall);                                                                        //
 
   glfwSwapBuffers(window);
+}
+
+
+
+
+
+void SetProjMatrixFor(shader_obj::Shader& shader, float scrn_w, float scrn_h) {
+
+  glm::mat4 projection_mat = glm::mat4(1.0f);
+  float aspect_ratio = scrn_w / scrn_h;
+  projection_mat = glm::perspective(
+    glm::radians(80.0f), aspect_ratio, 0.1f, 100.0f);
+
+  shader.SetMat4fv("projection", projection_mat);
 }

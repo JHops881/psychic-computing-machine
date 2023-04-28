@@ -164,13 +164,14 @@
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
-    <_EmbedManagedResourceFile Include="res\shaders\vertex_shader.vert">
+    <ClInclude Include="include\map.h" />
+    <_EmbedManagedResourceFile Include="res\shaders\general.vert">
       <FileType>Document</FileType>
     </_EmbedManagedResourceFile>
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <_EmbedManagedResourceFile Include="res\shaders\fragment_shader.frag">
+    <_EmbedManagedResourceFile Include="res\shaders\general.frag">
       <FileType>Document</FileType>
     </_EmbedManagedResourceFile>
   </ItemGroup>
@@ -185,8 +186,14 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png" />
+    <Image Include="res\textures\character.png" />
     <Image Include="res\textures\container.jpg" />
+    <Image Include="res\textures\pallet.png" />
     <Image Include="res\textures\wall.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\shaders\2d.frag" />
+    <None Include="res\shaders\2d.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

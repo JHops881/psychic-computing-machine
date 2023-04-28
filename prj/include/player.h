@@ -28,7 +28,7 @@ namespace player {
     class Projectile;
     //+------------------------------
 
-   
+
     glm::vec3    pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
     float        rotation_  =  0.0f;
     
@@ -40,7 +40,7 @@ namespace player {
     std::vector<Projectile> projectiles_; // vector of all active projectiles
     models::Quad& model_; // in this case the player model is just a square
 
-
+    
   public:
 
     Player(shader_obj::Shader& shader, models::Quad& model) 
@@ -134,7 +134,7 @@ namespace player {
     // called every frame in Render() to draw the player
     void Draw() {
 
-      current_shader_.use();
+      
       model_.Select();
 
       glm::mat4 model_mat = glm::mat4(1.0f);
@@ -143,6 +143,7 @@ namespace player {
       model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
       current_shader_.SetMat4fv("model", model_mat);
 
+      current_shader_.use();
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
@@ -252,7 +253,6 @@ namespace player {
       // in Render()
       void Draw(shader_obj::Shader& shader) {
 
-        shader.use();
 
         // since model_ is a std::reference_wrapper, you have to use
         // .get() to "get" to to access the object it is wrapping
@@ -264,6 +264,7 @@ namespace player {
         model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
         shader.SetMat4fv("model", model_mat);
 
+        shader.use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
       }
