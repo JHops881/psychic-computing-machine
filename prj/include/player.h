@@ -26,11 +26,15 @@ namespace player {
   class Player {
 
     class Projectile;
+    //+------------------------------
 
    
-    glm::vec3        pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
-    float            rotation_  =  0.0f;
+    glm::vec3    pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
+    float        rotation_  =  0.0f;
     
+    int          firerate_  =  35;  // # of fixedupdates between each shot
+    int          fr_cntr_   =  0;  // counting the fixedupdates
+
     shader_obj::Shader& current_shader_;
     std::vector<Projectile> projectiles_;
     models::Quad& model_;
@@ -40,24 +44,30 @@ namespace player {
 
     Player(shader_obj::Shader& shader, models::Quad& model) 
       : current_shader_(shader), model_(model) {
+
     }
 
 
 
 
     inline glm::vec3 GetPos() const {
+
       return pos_;
+
     }
 
 
 
     inline void SetRotation(float angle) {
+
       rotation_ = angle;
+
     }
 
 
 
     void ProcessMovement(GLFWwindow* window) {
+
       // make key input do stuff
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         pos_ += glm::vec3(0.0f, 0.1f, 0.0f);
@@ -71,12 +81,22 @@ namespace player {
       if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         pos_ += glm::vec3(0.1f, 0.0f, 0.0f);
       }
-      if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        Shoot();
+      if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (fr_cntr_ < firerate_)
+          fr_cntr_++;
+        else {
+          Shoot();
+          fr_cntr_ = 0;
+        }
+          
       }
+
     }
 
+
+
     void ProcessLookingDirection(GLFWwindow* window) {
+
       double mouse_posx, mouse_posy;
       glfwGetCursorPos(window, &mouse_posx, &mouse_posy);
       int width, height;
@@ -93,6 +113,7 @@ namespace player {
       double angle = atan2(look_directiony, look_directionx) - NDIR;
 
       rotation_ = angle;
+
     }
 
 
@@ -104,7 +125,8 @@ namespace player {
 
       glm::mat4 model_mat = glm::mat4(1.0f);
       model_mat = glm::translate(model_mat, pos_);
-      model_mat = glm::rotate(model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+      model_mat = glm::rotate(
+      model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
       current_shader_.SetMat4fv("model", model_mat);
 
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -112,7 +134,7 @@ namespace player {
 
 
     void Shoot() {
-      projectiles_.push_back(Projectile(*this, rotation_));
+      projectiles_.push_back(Projectile(*this, model_, rotation_));
       std::cout << projectiles_.size() << std::endl;
     }
     
@@ -154,11 +176,16 @@ namespace player {
   private:
     
     class Projectile {
-   
-      models::Quad    model_     =  models::Quad(); // TODO dump instance of quad in each projectile
-      glm::vec3       pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
-      glm::vec3       direct_    =  glm::vec3(0.1f, 0.1f, 0.0f);
-      const int       lifetime_  =  120;
+
+      glm::vec3           pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
+      glm::vec3           direct_    =  glm::vec3(0.0f, 0.0f, 0.0f);
+      float               rotation_    =  0.0f;
+      static const int    lifetime_  =  120;
+
+      std::reference_wrapper<models::Quad> model_;
+      // reference_wrapper is a reference that is copyable and
+      // movable. it is needed because Projectile objects are going
+      // into a std::vector, where they are copied and moved
 
     public:
 
@@ -169,29 +196,39 @@ namespace player {
     public:
 
 
-      Projectile(Player& player, double angle) {
+      Projectile(Player& player, models::Quad& model, double angle)
+        : model_(model) {
 
         pos_ = player.GetPos();
+        rotation_ = player.rotation_;
 
+        constexpr float NDIR = glm::radians(90.0f);
+
+        direct_.x = cos(rotation_ + NDIR) / 5.0f;
+        direct_.y = sin(rotation_ + NDIR) / 5.0f;
 
       }
 
 
-
-      Projectile() {}
 
 
 
       void Draw(shader_obj::Shader& shader) {
 
         shader.use();
-        model_.Select();
+
+        // since model_ is a std::reference_wrapper, you have to use
+        // .get() to "get" to to access the object it is wrapping
+        model_.get().Select();
 
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, pos_);
+        model_mat = glm::rotate(
+        model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
         shader.SetMat4fv("model", model_mat);
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
       }
 
 
@@ -204,6 +241,7 @@ namespace player {
         else {
           is_dead_ = true;
         }
+
       }
 
 
