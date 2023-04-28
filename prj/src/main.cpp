@@ -43,7 +43,7 @@ void Update(
   );
 void FixedUpdate(GLFWwindow* window, player::Player& player);
 void Render(GLFWwindow* window, player::Player& player,
-  shader_obj::Shader& shader, models::Wall& wall);
+  shader_obj::Shader& shader, models::WallModel& wall);
 
 
 int main() {
@@ -124,7 +124,7 @@ int main() {
   general_shader.use();
 
   // load in the wall model
-  models::Wall wall = models::Wall();
+  models::WallModel wall = models::WallModel();
   models::Quad square = models::Quad();
 
   player::Player player_one = player::Player(general_shader, square);
@@ -199,8 +199,9 @@ int main() {
 
 
 
-// called ?? times a seccond at a fixed rate
+// called 60 times a seccond to update the state of the game.
 void FixedUpdate(GLFWwindow* window, player::Player& player) {
+
   // grab key input from GLFW
   glfwPollEvents();
 
@@ -208,10 +209,10 @@ void FixedUpdate(GLFWwindow* window, player::Player& player) {
     glfwSetWindowShouldClose(window, true);
   }
 
+  // update player state
   player.ProcessMovement(window);
-
   player.ProcessLookingDirection(window);
-  
+  player.ProcessShooting(window);
   player.UpdateProjectiles();
 }
 
@@ -247,17 +248,18 @@ void FixedUpdate(GLFWwindow* window, player::Player& player) {
 
 
 
-
+// called every frame.
 void Render(
   GLFWwindow*            window,
   player::Player&        player,
   shader_obj::Shader&    shader,
-  models::Wall&          wall
+  models::WallModel&          wall
   )
 {  
   // select the shader             
   shader.use();       
          
+  // background color grey
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f);                           
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
@@ -268,11 +270,10 @@ void Render(
     glm::translate(
       view_mat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.GetPos())       
     );                                                                 
-
   shader.SetMat4fv("view", view_mat); 
   
-  player.Draw();
 
+  player.Draw();
   player.DrawProjectiles();
                                                             
   tgh::DrawVisibleWalls(shader, wall);                                                                        //

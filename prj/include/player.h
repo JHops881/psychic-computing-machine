@@ -32,12 +32,13 @@ namespace player {
     glm::vec3    pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
     float        rotation_  =  0.0f;
     
-    int          firerate_  =  35;  // # of fixedupdates between each shot
-    int          fr_cntr_   =  0;  // counting the fixedupdates
+    double       shoot_cd_  =  0.75;   // time between shots
+    double       lastshot_  =  0.0; // the of the last shot
+    
 
     shader_obj::Shader& current_shader_;
-    std::vector<Projectile> projectiles_;
-    models::Quad& model_;
+    std::vector<Projectile> projectiles_; // vector of all active projectiles
+    models::Quad& model_; // in this case the player model is just a square
 
 
   public:
@@ -65,7 +66,9 @@ namespace player {
     }
 
 
-
+    // called 60 times a second in each FixedUpdate()
+    // processes movement actions from the glfwPollEvents()
+    // called before it.
     void ProcessMovement(GLFWwindow* window) {
 
       // make key input do stuff
@@ -81,20 +84,13 @@ namespace player {
       if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         pos_ += glm::vec3(0.1f, 0.0f, 0.0f);
       }
-      if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (fr_cntr_ < firerate_)
-          fr_cntr_++;
-        else {
-          Shoot();
-          fr_cntr_ = 0;
-        }
-          
-      }
 
     }
 
 
-
+    // called 60 times a second in each FixedUpdate()
+    // processes the positional data of the cursor to change
+    // rotation of the player to look at the cursor.
     void ProcessLookingDirection(GLFWwindow* window) {
 
       double mouse_posx, mouse_posy;
@@ -117,7 +113,25 @@ namespace player {
     }
 
 
+    // called 60 times a second in each FixedUpdate() to check mouse button
+    // input and the cooldown on the shooting player. 
+    // basically, this recieves mouse input and makes the player shoot
+    // accordingly.
+    void ProcessShooting(GLFWwindow* window) {
 
+      if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+
+        if (glfwGetTime() - lastshot_ > shoot_cd_) {
+          Shoot();
+          lastshot_ = glfwGetTime();
+        }
+
+      }
+
+    }
+
+
+    // called every frame in Render() to draw the player
     void Draw() {
 
       current_shader_.use();
@@ -132,38 +146,52 @@ namespace player {
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
+    
 
+    // called in ProcessShooting() when the player is able to shoot
     void Shoot() {
+
       projectiles_.push_back(Projectile(*this, model_, rotation_));
-      std::cout << projectiles_.size() << std::endl;
+      //std::cout << projectiles_.size() << std::endl;
+
     }
     
 
 
+    // called every frame in Render()
     void DrawProjectiles() {
 
       if (projectiles_.size()) {
+
         for (Projectile& p : projectiles_) {
+
           p.Draw(current_shader_);
+
         }
       }
     }
 
 
+    // called 60 times a second in each FixedUpdate() to
+    // update the positions of the player's projectiles and cull
+    // ones that have expired
+    void UpdateProjectiles() {
 
-    void UpdateProjectiles() { // TODO: FIX
       if (projectiles_.size()) {
+
         for (int i = 0; i < projectiles_.size(); i++) {
+
           projectiles_[i].Move();
+
           if (projectiles_[i].is_dead_) {
+
             projectiles_.erase(projectiles_.begin() + i);
             i--;
+
           }
           else {
             projectiles_[i].age_++;
           }
-         
-          
         }
       }
     }
@@ -175,12 +203,19 @@ namespace player {
 
   private:
     
+
+
     class Projectile {
 
       glm::vec3           pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
-      glm::vec3           direct_    =  glm::vec3(0.0f, 0.0f, 0.0f);
-      float               rotation_    =  0.0f;
-      static const int    lifetime_  =  120;
+      glm::vec3           direct_    =  glm::vec3(0.0f, 0.0f, 0.0f); // below*
+      float               rotation_  =  0.0f;
+      static const int    lifetime_  =  120; // measured in FixedUpdate()s
+
+      // * direct_ is initialized to zero, but immedialty changes in the
+      // constructor to be a unit vector in the direction that the player
+      // shot in. it is then added to the pos_ of the projectile every
+      // FixedUpdate() in Move() to make the projectile travel through space
 
       std::reference_wrapper<models::Quad> model_;
       // reference_wrapper is a reference that is copyable and
@@ -189,8 +224,8 @@ namespace player {
 
     public:
 
-      bool            is_dead_   =  false;
-      int             age_       =  0;
+      bool            is_dead_   =  false; // when this is true it is deleted
+      int             age_       =  0; // measured in FixedUpdate()s
 
 
     public:
@@ -212,7 +247,9 @@ namespace player {
 
 
 
-
+      // called for every projectile for a player in 
+      // player::Player.DrawProjectiles() which is called every frame
+      // in Render()
       void Draw(shader_obj::Shader& shader) {
 
         shader.use();
@@ -232,7 +269,7 @@ namespace player {
       }
 
 
-
+      // used to update the postion of a projectile
       void Move() {
 
         if (age_ < lifetime_) {

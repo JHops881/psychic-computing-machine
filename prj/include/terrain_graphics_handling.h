@@ -5,7 +5,7 @@
 
 namespace tgh {
 
-  void DrawVisibleWalls(shader_obj::Shader& shader, models::Wall& wall);
+  void DrawVisibleWalls(shader_obj::Shader& shader, models::WallModel& wall);
 }
 
 #endif

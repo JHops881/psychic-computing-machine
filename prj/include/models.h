@@ -9,7 +9,8 @@ namespace models {
 
 
 
-  // the Quad class is just a square
+  // The Quad class defines a 3D graphical model that will
+  // display be a 2DSquare when selected and drawn by openGL
   class Quad {
 
   private:
@@ -66,9 +67,9 @@ namespace models {
 
 
 
-  // The wall class defines a 3D graphical object that will
+  // The WallModel class defines a 3D graphical model that will
   // display be a wall when selected and drawn by openGL
-  class Wall {
+  class WallModel {
 
   private:
 
@@ -78,7 +79,7 @@ namespace models {
 
   public:
 
-    Wall() {
+    WallModel() {
 
       float vertex_data[] = {
         // position attr
@@ -142,23 +143,6 @@ namespace models {
 
   };
 
-  // enable depth testing with the z-buffer
-  // with openGL so we dont get weird stuff
-  inline void TurnOnOpenGLDepthTesting() {
-    
-  }
-  
-
-  // enable face culling. OpenGL will cull all faces of 
-  // objects that are not front facing. saves 50% performance.
-  inline void TurnOnClockwiseOpenGLFaceCulling() {
-    
-  }
-  
-  // wirecframe mode!
-  inline void TurnOnOpenGLWireframeMode() {
-   
-  }
   
 
 }

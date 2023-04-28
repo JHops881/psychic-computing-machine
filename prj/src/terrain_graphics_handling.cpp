@@ -35,7 +35,7 @@ namespace tgh {
 
 
 
-  void DrawVisibleWalls(shader_obj::Shader& shader, models::Wall& wall) {
+  void DrawVisibleWalls(shader_obj::Shader& shader, models::WallModel& wall) {
     wall.Select();
     for (int i = 0; i < 572; i++) {
       if (visible_walls[i] != 0) {
