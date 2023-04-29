@@ -1,6 +1,6 @@
 #include <stdexcept>
 
-#include "../include/AABB2D.h"
+#include <AABB2D.h>
 
 AABB::AABB(glm::vec2 A, glm::vec2 B) noexcept(std::invalid_argument)
   : A(A), B(B)

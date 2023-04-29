@@ -71,19 +71,19 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Libs and Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libs and Headers\include;$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libs and Headers\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Libs and Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libs and Headers\include;$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libs and Headers\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Libs and Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libs and Headers\include;$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libs and Headers\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Libs and Headers\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Libs and Headers\include;$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Libs and Headers\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -164,7 +164,6 @@
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
-    <ClInclude Include="include\map.h" />
     <_EmbedManagedResourceFile Include="res\shaders\general.vert">
       <FileType>Document</FileType>
     </_EmbedManagedResourceFile>

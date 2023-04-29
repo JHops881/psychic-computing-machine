@@ -1,11 +1,11 @@
-#ifndef TERRAIN_H
-#define TERRAIN_H
+#ifndef PRJ_INCLUDE_TERRAIN_H
+#define PRJ_INCLUDE_TERRAIN_H
 
 
 
 namespace tgh {
 
-  void DrawVisibleWalls(shader_obj::Shader& shader, models::WallModel& wall);
+  void drawVisibleWalls(shaderObj::Shader& shader, models::WallModel& wall);
 }
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef PRJ_INCLUDE_PLAYER_H
+#define PRJ_INCLUDE_PLAYER_H
 
 #include <iostream>
 #include <vector>
@@ -11,11 +11,11 @@
 #include <glm/glm/glm.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 
-#include "models.h"
-#include "shader_obj.h"
+#include <models.h>
+#include <shader_obj.h>
 
 namespace player {
-  
+
 
 
 
@@ -31,27 +31,27 @@ namespace player {
 
     glm::vec3    pos_       =  glm::vec3(0.0f, 0.0f, 0.0f);
     float        rotation_  =  0.0f;
-    
-    double       shoot_cd_  =  0.75;   // time between shots
-    double       lastshot_  =  0.0; // the of the last shot
-    
 
-    shader_obj::Shader& current_shader_;
+    double       shootCD_  =  0.35;   // time between shots
+    double       lastShot_  =  0.0; // the of the last shot
+
+
+    shaderObj::Shader& currentShader_;
     std::vector<Projectile> projectiles_; // vector of all active projectiles
     models::Quad& model_; // in this case the player model is just a square
 
-    
+
   public:
 
-    Player(shader_obj::Shader& shader, models::Quad& model) 
-      : current_shader_(shader), model_(model) {
+    Player(shaderObj::Shader& shader, models::Quad& model)
+      : currentShader_(shader), model_(model) {
 
     }
 
 
 
 
-    inline glm::vec3 GetPos() const {
+    inline glm::vec3 getPos() const {
 
       return pos_;
 
@@ -59,7 +59,7 @@ namespace player {
 
 
 
-    inline void SetRotation(float angle) {
+    inline void setRotation(float angle) {
 
       rotation_ = angle;
 
@@ -69,7 +69,7 @@ namespace player {
     // called 60 times a second in each FixedUpdate()
     // processes movement actions from the glfwPollEvents()
     // called before it.
-    void ProcessMovement(GLFWwindow* window) {
+    void processMovement(GLFWwindow* window) {
 
       // make key input do stuff
       if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
@@ -91,22 +91,22 @@ namespace player {
     // called 60 times a second in each FixedUpdate()
     // processes the positional data of the cursor to change
     // rotation of the player to look at the cursor.
-    void ProcessLookingDirection(GLFWwindow* window) {
+    void processLookingDirection(GLFWwindow* window) {
 
-      double mouse_posx, mouse_posy;
-      glfwGetCursorPos(window, &mouse_posx, &mouse_posy);
+      double mousePosX, mousePosY;
+      glfwGetCursorPos(window, &mousePosX, &mousePosY);
       int width, height;
       glfwGetWindowSize(window, &width, &height);
-      mouse_posy = height - mouse_posy;
-      int player_posx = width / 2;
-      int player_posy = height / 2;
+      mousePosY = height - mousePosY;
+      int playerPosX = width / 2;
+      int playerPosY = height / 2;
 
-      int look_directionx = mouse_posx - player_posx;
-      int look_directiony = mouse_posy - player_posy;
+      int lookDirectionX = mousePosX - playerPosX;
+      int lookDirectionY = mousePosY - playerPosY;
 
       constexpr double NDIR = glm::radians(90.0f);
 
-      double angle = atan2(look_directiony, look_directionx) - NDIR;
+      double angle = atan2(lookDirectionY, lookDirectionX) - NDIR;
 
       rotation_ = angle;
 
@@ -117,13 +117,13 @@ namespace player {
     // input and the cooldown on the shooting player. 
     // basically, this recieves mouse input and makes the player shoot
     // accordingly.
-    void ProcessShooting(GLFWwindow* window) {
+    void processShooting(GLFWwindow* window) {
 
       if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 
-        if (glfwGetTime() - lastshot_ > shoot_cd_) {
-          Shoot();
-          lastshot_ = glfwGetTime();
+        if (glfwGetTime() - lastShot_ > shootCD_) {
+          shoot();
+          lastShot_ = glfwGetTime();
         }
 
       }
@@ -132,41 +132,41 @@ namespace player {
 
 
     // called every frame in Render() to draw the player
-    void Draw() {
+    void draw() {
 
-      
-      model_.Select();
 
-      glm::mat4 model_mat = glm::mat4(1.0f);
-      model_mat = glm::translate(model_mat, pos_);
-      model_mat = glm::rotate(
-      model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
-      current_shader_.SetMat4fv("model", model_mat);
+      model_.select();
 
-      current_shader_.use();
+      glm::mat4 modelMatrix = glm::mat4(1.0f);
+      modelMatrix = glm::translate(modelMatrix, pos_);
+      modelMatrix = glm::rotate(
+        modelMatrix, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+      currentShader_.setMat4fv("model", modelMatrix);
+
+      currentShader_.use();
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
 
-    
+
 
     // called in ProcessShooting() when the player is able to shoot
-    void Shoot() {
+    void shoot() {
 
       projectiles_.push_back(Projectile(*this, model_, rotation_));
       //std::cout << projectiles_.size() << std::endl;
 
     }
-    
+
 
 
     // called every frame in Render()
-    void DrawProjectiles() {
+    void drawProjectiles() {
 
       if (projectiles_.size()) {
 
         for (Projectile& p : projectiles_) {
 
-          p.Draw(current_shader_);
+          p.draw(currentShader_);
 
         }
       }
@@ -176,15 +176,15 @@ namespace player {
     // called 60 times a second in each FixedUpdate() to
     // update the positions of the player's projectiles and cull
     // ones that have expired
-    void UpdateProjectiles() {
+    void updateProjectiles() {
 
       if (projectiles_.size()) {
 
         for (int i = 0; i < projectiles_.size(); i++) {
 
-          projectiles_[i].Move();
+          projectiles_[i].move();
 
-          if (projectiles_[i].is_dead_) {
+          if (projectiles_[i].isDead_) {
 
             projectiles_.erase(projectiles_.begin() + i);
             i--;
@@ -198,12 +198,12 @@ namespace player {
     }
 
 
-    
+
 
 
 
   private:
-    
+
 
 
     class Projectile {
@@ -225,7 +225,7 @@ namespace player {
 
     public:
 
-      bool            is_dead_   =  false; // when this is true it is deleted
+      bool            isDead_   =  false; // when this is true it is deleted
       int             age_       =  0; // measured in FixedUpdate()s
 
 
@@ -235,7 +235,7 @@ namespace player {
       Projectile(Player& player, models::Quad& model, double angle)
         : model_(model) {
 
-        pos_ = player.GetPos();
+        pos_ = player.getPos();
         rotation_ = player.rotation_;
 
         constexpr float NDIR = glm::radians(90.0f);
@@ -251,18 +251,18 @@ namespace player {
       // called for every projectile for a player in 
       // player::Player.DrawProjectiles() which is called every frame
       // in Render()
-      void Draw(shader_obj::Shader& shader) {
+      void draw(shaderObj::Shader& shader) {
 
 
         // since model_ is a std::reference_wrapper, you have to use
         // .get() to "get" to to access the object it is wrapping
-        model_.get().Select();
+        model_.get().select();
 
-        glm::mat4 model_mat = glm::mat4(1.0f);
-        model_mat = glm::translate(model_mat, pos_);
-        model_mat = glm::rotate(
-        model_mat, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
-        shader.SetMat4fv("model", model_mat);
+        glm::mat4 modelMatrix = glm::mat4(1.0f);
+        modelMatrix = glm::translate(modelMatrix, pos_);
+        modelMatrix = glm::rotate(
+          modelMatrix, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.setMat4fv("model", modelMatrix);
 
         shader.use();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -271,13 +271,13 @@ namespace player {
 
 
       // used to update the postion of a projectile
-      void Move() {
+      void move() {
 
         if (age_ < lifetime_) {
           pos_ += direct_;
         }
         else {
-          is_dead_ = true;
+          isDead_ = true;
         }
 
       }
@@ -285,12 +285,12 @@ namespace player {
 
 
     };
-  
-    
+
+
 
   };
 
-  
+
 
 }
 

@@ -1,5 +1,5 @@
-#ifndef MODELS_H_
-#define MODELS_H_
+#ifndef PRJ_INCLUDE_MODELS_H_
+#define PRJ_INCLUDE_MODELS_H_
 
 #include <glad/glad.h>
 
@@ -23,7 +23,7 @@ namespace models {
 
     Quad() {
 
-      float vertex_data[] = {
+      float vertexData[] = {
         // position attr
       -0.5f,  0.5f, 0.0f,  //top left
        0.5f,  0.5f, 0.0f,   //top right
@@ -43,7 +43,7 @@ namespace models {
       glBindVertexArray(vao_);
 
       glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -56,10 +56,10 @@ namespace models {
 
   public:
     
-    inline void Select() {
+    inline void select() {
       glBindVertexArray(vao_);
     }
-    inline void Deselect() {
+    inline void deselect() {
       glBindVertexArray(0);
     }
 
@@ -81,7 +81,7 @@ namespace models {
 
     WallModel() {
 
-      float vertex_data[] = {
+      float vertexData[] = {
         // position attr
         -0.5f,  0.5f,  2.5f,  //FTL front top left     [0]
          0.5f,  0.5f,  2.5f,  //FTR front top right    [1]
@@ -121,7 +121,7 @@ namespace models {
       glBindVertexArray(vao_);
 
       glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo_);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -134,10 +134,10 @@ namespace models {
 
   public:
 
-    inline void Select() {
+    inline void select() {
       glBindVertexArray(vao_);
     }
-    inline void Deselect() {
+    inline void deselect() {
       glBindVertexArray(0);
     }
 
