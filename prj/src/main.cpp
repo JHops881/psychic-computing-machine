@@ -33,19 +33,11 @@
 #include <models.h>
 #include <player.h>
 #include <my_glfw_callbacks.h>
-#include <terrain_graphics_handling.h>
 
-void update(
-  GLFWwindow* window, 
-  player::Player& player,
-  double timeBetweenUpdates, 
-  double totalTime, 
-  double lastFrameUpdateTime
-  );
-void fixedUpdate(GLFWwindow* window, player::Player& player);
-void render(GLFWwindow* window, player::Player& player,
-  shaderObj::Shader& shader, models::WallModel& wall);
-void setProjMatrixFor(shaderObj::Shader& shader, float scrnW, float scrnH);
+
+void fixedUpdate(GLFWwindow* window, Player& player);
+void render(GLFWwindow* window, Player& player);
+void setProjMatrixFor(ShaderProgram& shader, float scrnW, float scrnH);
 
 
 int main() {
@@ -87,51 +79,41 @@ int main() {
   
   // make the glfw window, init glfw, init glad, error handling, start openGL
   //--------------------------------------------------------------------------++
-                                                                              //
-  glfwInit();                                                                 //
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);                              //
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);                              //
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);              //
-                                                                              //
-                                                                              //
-  GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight,          //
-    windowTitle, glfwGetPrimaryMonitor(), NULL);                             //
-                                                                              //
-  if (window == NULL) {                                                       //
-    std::cout << "GLFW FAILED TO INIT" << std::endl;                          //
-    glfwTerminate();                                                          //
-    return -1;                                                                //
-  }                                                                           //
-  glfwMakeContextCurrent(window);                                             //
-                                                                              //
-  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {                  //
-    std::cout << "FAILED TO LOAD GLAD" << std::endl;                          //
-    return -1;                                                                //
-  }                                                                           //
-                                                                              //
-  glViewport(0, 0, screenWidth, screenHeight);                              //
-  glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);            //
-  glfwSetMouseButtonCallback(window, mouseButtonCallback);                    //
-                                                                              //
-  //--------------------------------------------------------------------------++
-   
+                                                                            
+  glfwInit(); 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+                                                                             
+  
+  GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, windowTitle, glfwGetPrimaryMonitor(), NULL);
+  if (window == NULL) {
+    std::cout << "GLFW FAILED TO INIT" << std::endl;
+    glfwTerminate();
+    return -1;                                                    
+  }                                                               
+  glfwMakeContextCurrent(window);                                 
+                                                                  
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {      
+    std::cout << "FAILED TO LOAD GLAD" << std::endl;              
+    return -1;                                                    
+  }                                                               
+                                                                  
+  glViewport(0, 0, screenWidth, screenHeight);                    
+  glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+  glfwSetMouseButtonCallback(window, mouseButtonCallback);        
+                                                                  
+  //--------------------------------------------------------------
+
 
 
   // create the shader program
-  shaderObj::Shader generalShader(
-    ".\\res\\shaders\\general.vert",
-    ".\\res\\shaders\\general.frag");
-
-
-
-  // load in the models
-  models::WallModel wall = models::WallModel();
-  models::Quad square = models::Quad();
+  ShaderProgram generalShader(".\\res\\shaders\\general.vert", ".\\res\\shaders\\general.frag");
 
 
 
 
-  player::Player playerOne = player::Player(generalShader, square);
+  Player playerOne = Player(generalShader);
 
 
 
@@ -161,8 +143,6 @@ int main() {
   double lastLoopTime;
   double totalTime = 0.0;
   constexpr double timeBetweenUpdates = (1.0 / 60.0);
-  double lastFrameUpdateTime = 0.0;
-  double lastFixedUpdateTime = 0.0;
   double startTime = 0.0;
   double endTime = 0.0;
   
@@ -177,15 +157,10 @@ int main() {
 
       // fixedUpdate
       fixedUpdate(window, playerOne);
-      lastFixedUpdateTime = glfwGetTime();
       totalTime -= timeBetweenUpdates;
     }
 
-    // render
-    //Update()
-    lastFrameUpdateTime = glfwGetTime() - lastFixedUpdateTime;
-    render(window, playerOne, generalShader, wall);
-
+    render(window, playerOne);
    
     endTime = glfwGetTime();
   } 
@@ -207,7 +182,7 @@ int main() {
 
 
 // called 60 times a seccond to update the state of the game.
-void fixedUpdate(GLFWwindow* window, player::Player& player) {
+void fixedUpdate(GLFWwindow* window, Player& player) {
 
   // grab key input from GLFW
   glfwPollEvents();
@@ -216,54 +191,14 @@ void fixedUpdate(GLFWwindow* window, player::Player& player) {
     glfwSetWindowShouldClose(window, true);
   }
 
-  // update player state
-  player.processMovement(window);
-  player.processLookingDirection(window);
-  player.processShooting(window);
-  player.updateProjectiles();
+  player.update(window);
 
 }
 
 
 
-
-
-//// called every frame
-//void Update(
-//  GLFWwindow*        window,
-//  player::Player&    player,
-//  double             time_between_updates,
-//  double             total_time,
-//  double             last_frame_update_time
-//  )
-//{
-//  float interval_p = static_cast<float>(
-//    (total_time - last_frame_update_time) / time_between_updates);
-//  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-//    player.MoveAmount(glm::vec3(0.0f, 0.1f, 0.0f) * interval_p);
-//  }
-//  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-//    player.MoveAmount(glm::vec3(-0.1f, 0.0f, 0.0f) * interval_p);
-//  }
-//  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-//    player.MoveAmount(glm::vec3(0.0f, -0.1f, 0.0f) * interval_p);
-//  }
-//  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-//    player.MoveAmount(glm::vec3(0.1f, 0.0f, 0.0f) * interval_p);
-//  }
-//}
-
-
-
-
 // called every frame.
-void render(
-  GLFWwindow*            window,
-  player::Player&        player,
-  shaderObj::Shader&    shader,
-  models::WallModel&     wall
-  )
-{  
+void render(GLFWwindow* window, Player&player) {
         
          
   // background color grey
@@ -273,21 +208,13 @@ void render(
   // defining the view matrix per                                       
   // frame because it changes with movement                       
   glm::mat4 viewMat = glm::mat4(1.0f);                                 
-  viewMat =                                                             
-    glm::translate(
-      viewMat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.getPos())       
-    );                                                                 
-  shader.setMat4fv("view", viewMat);
+  viewMat = glm::translate(viewMat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.getPos()));                                                                 
+  player.getShader().setMat4fv("view", viewMat);
   
 
   // map::Draw();
 
   player.draw();
-  player.drawProjectiles();
- 
-
-  shader.use();
-  tgh::drawVisibleWalls(shader, wall);                                                                        //
 
   glfwSwapBuffers(window);
 }
@@ -296,12 +223,11 @@ void render(
 
 
 
-void setProjMatrixFor(shaderObj::Shader& shader, float scrnW, float scrnH) {
+void setProjMatrixFor(ShaderProgram& shader, float scrnW, float scrnH) {
 
   glm::mat4 projectionMatrix = glm::mat4(1.0f);
   float aspectRatio = scrnW / scrnH;
-  projectionMatrix = glm::perspective(
-    glm::radians(80.0f), aspectRatio, 0.1f, 100.0f);
+  projectionMatrix = glm::perspective(glm::radians(80.0f), aspectRatio, 0.1f, 100.0f);
 
   shader.setMat4fv("projection", projectionMatrix);
 }

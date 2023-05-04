@@ -155,7 +155,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\terrain_graphics_handling.cpp" />
+    <ClInclude Include="include\Projectile.h" />
+    <ClInclude Include="include\Enemy.h" />
+    <ClInclude Include="include\Entity.h" />
+    <ClInclude Include="include\Environment.h" />
+    <ClInclude Include="include\GameObject.h" />
     <ClInclude Include="include\my_glfw_callbacks.h" />
     <ClCompile Include="src\AABB2D.cc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -164,6 +168,8 @@
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
     <ClCompile Include="res\stb_image.cpp" />
+    <ClInclude Include="include\Tile.h" />
+    <ClInclude Include="include\Wall.h" />
     <_EmbedManagedResourceFile Include="res\shaders\general.vert">
       <FileType>Document</FileType>
     </_EmbedManagedResourceFile>
@@ -181,7 +187,6 @@
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\shader_obj.h" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="include\terrain_graphics_handling.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\awesomeface.png" />
