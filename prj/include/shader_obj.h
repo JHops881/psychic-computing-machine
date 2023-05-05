@@ -10,6 +10,12 @@
 #include <sstream> 
 #include <iostream>
 
+enum MatrixType {
+  MODEL, VIEW, PROJECTION
+};
+
+
+
 
 class ShaderProgram {
 
@@ -119,7 +125,7 @@ public:
 
   ShaderProgram() {}
 
-  inline void use() {
+  inline void select() {
     glUseProgram(id_);
   }
 
@@ -149,6 +155,79 @@ public:
     glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat4));
     glUseProgram(0);
   }
+
+
+  // for projection 
+  void updateMatrix(MatrixType type, float aspectRatio, float fovDegrees, float near, float far) {
+    if (type == PROJECTION) {
+
+      glm::mat4 projectionMatrix = glm::mat4(1.0f);
+      projectionMatrix = glm::perspective(glm::radians(fovDegrees), aspectRatio, near, far);
+
+      setMat4fv("projection", projectionMatrix);
+
+    }
+    else {
+      std::cout << "ERROR::SHADER::INCORRECT PARAMETERS FOR MATRIX TYPE PROJECTION" << std::endl;
+    }
+
+  }
+  // for model with NO rotation
+  void updateMatrix(MatrixType type, glm::vec3& worldPosition) {
+  
+    if (type == MODEL) {
+
+      glm::mat4 modelMatrix = glm::mat4(1.0f);
+      modelMatrix = glm::translate(modelMatrix, worldPosition);
+      setMat4fv("model", modelMatrix);
+
+    }
+    else {
+      std::cout << "ERROR::SHADER::INCORRECT PARAMETERS FOR MATRIX TYPE MODEL" << std::endl;
+    }
+  
+  }
+  // for model WITH rotation
+  void updateMatrix(MatrixType type, glm::vec3& worldPosition, float rotationRadians) {
+
+    if (type == MODEL) {
+
+      glm::mat4 modelMatrix = glm::mat4(1.0f);
+      modelMatrix = glm::translate(modelMatrix, worldPosition);
+      modelMatrix = glm::rotate(modelMatrix, rotationRadians, glm::vec3(0.0f, 0.0f, 1.0f));
+      setMat4fv("model", modelMatrix);
+
+    }
+    else {
+      std::cout << "ERROR::SHADER::INCORRECT PARAMETERS FOR MATRIX TYPE MODEL" << std::endl;
+    }
+
+  }
+  // for view
+  void updateMatrix(MatrixType type, glm::vec3 cameraOrigin, glm::vec3& offset) {
+
+    if (type == VIEW) {
+
+      glm::mat4 viewMatrix = glm::mat4(1.0f);
+      viewMatrix = glm::translate(viewMatrix, (cameraOrigin -= offset));
+      setMat4fv("view", viewMatrix);
+
+    }
+    else {
+      std::cout << "ERROR::SHADER::INCORRECT PARAMETERS FOR MATRIX TYPE VIEW" << std::endl;
+    }
+
+
+  }
+
+
+
+
+  
+
+
+
+  
 
 
 

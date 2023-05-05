@@ -19,6 +19,9 @@ private:
 
 public:
 
+  // use this constructor to create and empty Quad2D
+  Quad2D(char anything) { anything = 0; }
+
   Quad2D() {
 
     float vertexData[] = {
@@ -52,6 +55,8 @@ public:
     glBindVertexArray(0);
   }
 
+  
+
 public:
   
   inline void select() {
@@ -84,6 +89,10 @@ private:
   unsigned int ebo_{};
 
 public:
+
+
+  // used to create and empty Cuboid3D
+  Cuboid3D(char anything) { anything = 0; }
 
   Cuboid3D() {
 
@@ -150,7 +159,9 @@ public:
 };
 
 
-
+// Defined in main.
+extern Quad2D* g_QUAD2D;
+extern Cuboid3D* g_CUBOID3D;
 
 
 #endif

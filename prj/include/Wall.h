@@ -13,7 +13,7 @@
 class Wall : GameObject {
 
 
-  Cuboid3D model_ = Cuboid3D();
+  Cuboid3D& model_ = *g_CUBOID3D;
 
 
 public:
@@ -28,11 +28,9 @@ public:
     
     model_.select();
 
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, pos_);
-    shaderProgram_.setMat4fv("model", modelMatrix);
+    shaderProgram_.updateMatrix(MODEL, pos_);
 
-    shaderProgram_.use();
+    shaderProgram_.select();
     glDrawElements(GL_TRIANGLES, 30, GL_UNSIGNED_INT, 0);
 
   }

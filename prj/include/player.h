@@ -26,7 +26,7 @@
 
 class Player : GameObject{
 
-  Quad2D model_ = Quad2D();
+  Quad2D& model_ = *g_QUAD2D;
 
 
 
@@ -49,7 +49,7 @@ public:
   }
 
 
-  inline glm::vec3 getPos() const {
+  inline glm::vec3& getPos() {
 
     return pos_;
 
@@ -77,22 +77,24 @@ public:
     }
 
     // looking somewhere
-    double mousePosX, mousePosY;
-    glfwGetCursorPos(window, &mousePosX, &mousePosY);
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    mousePosY = height - mousePosY;
-    int playerPosX = width / 2;
-    int playerPosY = height / 2;
+    {
+      double mousePosX, mousePosY;
+      glfwGetCursorPos(window, &mousePosX, &mousePosY);
+      int width, height;
+      glfwGetWindowSize(window, &width, &height);
+      mousePosY = height - mousePosY;
+      int playerPosX = width / 2;
+      int playerPosY = height / 2;
 
-    int lookDirectionX = mousePosX - playerPosX;
-    int lookDirectionY = mousePosY - playerPosY;
+      int lookDirectionX = mousePosX - playerPosX;
+      int lookDirectionY = mousePosY - playerPosY;
 
-    constexpr double NDIR = glm::radians(90.0f);
+      constexpr double NDIR = glm::radians(90.0f);
 
-    double angle = atan2(lookDirectionY, lookDirectionX) - NDIR;
+      double angle = atan2(lookDirectionY, lookDirectionX) - NDIR;
 
-    rotation_ = angle;
+      rotation_ = angle;
+    }
 
     // shooting
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
@@ -118,15 +120,11 @@ public:
   // called every frame in Render() to draw the player
   void draw() {
 
-
     model_.select();
 
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, pos_);
-    modelMatrix = glm::rotate(modelMatrix, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
-    shaderProgram_.setMat4fv("model", modelMatrix);
+    shaderProgram_.updateMatrix(MODEL, pos_, rotation_);
 
-    shaderProgram_.use();
+    shaderProgram_.select();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   }
 

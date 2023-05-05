@@ -27,17 +27,29 @@
 #include <glm/glm/gtc/type_ptr.hpp>
 
 // project headers
-#include "../include/stb_image.h" // not mine
+#include <stb_image.h> // not mine
 
 #include <shader_obj.h>
 #include <models.h>
 #include <player.h>
 #include <my_glfw_callbacks.h>
+#include <Wall.h>
+#include <Tile.h>
 
 
-void fixedUpdate(GLFWwindow* window, Player& player);
-void render(GLFWwindow* window, Player& player);
-void setProjMatrixFor(ShaderProgram& shader, float scrnW, float scrnH);
+// we define them here using that constructor that will make them
+// empty so that all of our things that inheret
+// <GameObject.h>::GameObject(s) can have
+// a reference to them at compile time.
+//
+// OpenGL cannot be interracted with until it its context is 
+// assigned to a thread with glfwMakeContextCurrent(window);
+// Thefore, we have to do this finicky business, then use
+// the actual constructors that give them openGL objects during
+// runtime in the main after we assign the openGL context to our
+// thread. 
+Quad2D*    g_QUAD2D   = new Quad2D('g');
+Cuboid3D*  g_CUBOID3D = new Cuboid3D('g');
 
 
 int main() {
@@ -105,22 +117,28 @@ int main() {
                                                                   
   //--------------------------------------------------------------
 
+  *g_QUAD2D = Quad2D();
+  *g_CUBOID3D = Cuboid3D();
 
 
   // create the shader program
   ShaderProgram generalShader(".\\res\\shaders\\general.vert", ".\\res\\shaders\\general.frag");
-
+  generalShader.updateMatrix(PROJECTION, ((float)screenWidth / (float)screenHeight), 80.0f, 0.1f, 100.0f);
 
 
 
   Player playerOne = Player(generalShader);
 
+  Wall wallOne = Wall(glm::vec3(1.0f, 0.0f, 0.0f), generalShader);
+  Wall wallTwo = Wall(glm::vec3(4.0f, 6.0f, 0.0f), generalShader);
+
+  Tile tileOne = Tile(glm::vec3(-3.0f, -3.0f, 0.0f), generalShader);
 
 
 
 
-  // defining the projection matrix
-  setProjMatrixFor(generalShader, screenWidth, screenHeight);
+
+  
 
 
 
@@ -156,78 +174,49 @@ int main() {
     while (totalTime >= timeBetweenUpdates) {
 
       // fixedUpdate
-      fixedUpdate(window, playerOne);
+      {
+        // grab key input from GLFW
+        glfwPollEvents();
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+          glfwSetWindowShouldClose(window, true);
+        }
+
+        playerOne.update(window);
+      }
       totalTime -= timeBetweenUpdates;
     }
 
-    render(window, playerOne);
+    //render
+    {
+      // background color grey
+      glClearColor(0.09f, 0.06f, 0.09f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      // defining the view matrix per                                       
+      // frame because it changes with movement                       
+      generalShader.updateMatrix(VIEW, glm::vec3(0.0f, 0.0f, -10.0f), playerOne.getPos());
+
+
+      // map::Draw();
+
+      playerOne.draw();
+      wallOne.draw();
+      wallTwo.draw();
+      tileOne.draw();
+
+      glfwSwapBuffers(window);
+    }
    
     endTime = glfwGetTime();
   } 
   //--------------------------------------------------------------------------++
  
   // kill glfw and free the resources
+  delete g_CUBOID3D;
+  delete g_QUAD2D;
   glfwTerminate();
   return 0;
 }
 
 
-
-
-
-
-
-
-
-
-
-// called 60 times a seccond to update the state of the game.
-void fixedUpdate(GLFWwindow* window, Player& player) {
-
-  // grab key input from GLFW
-  glfwPollEvents();
-
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-    glfwSetWindowShouldClose(window, true);
-  }
-
-  player.update(window);
-
-}
-
-
-
-// called every frame.
-void render(GLFWwindow* window, Player&player) {
-        
-         
-  // background color grey
-  glClearColor(0.09f, 0.06f, 0.09f, 1.0f);                           
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  
-  // defining the view matrix per                                       
-  // frame because it changes with movement                       
-  glm::mat4 viewMat = glm::mat4(1.0f);                                 
-  viewMat = glm::translate(viewMat, (glm::vec3(0.0f, 0.0f, -10.0f) -= player.getPos()));                                                                 
-  player.getShader().setMat4fv("view", viewMat);
-  
-
-  // map::Draw();
-
-  player.draw();
-
-  glfwSwapBuffers(window);
-}
-
-
-
-
-
-void setProjMatrixFor(ShaderProgram& shader, float scrnW, float scrnH) {
-
-  glm::mat4 projectionMatrix = glm::mat4(1.0f);
-  float aspectRatio = scrnW / scrnH;
-  projectionMatrix = glm::perspective(glm::radians(80.0f), aspectRatio, 0.1f, 100.0f);
-
-  shader.setMat4fv("projection", projectionMatrix);
-}

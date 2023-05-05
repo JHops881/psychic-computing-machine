@@ -20,7 +20,7 @@
 
 class Projectile : GameObject {
 
-  Quad2D model_ = Quad2D();
+  Quad2D& model_ = *g_QUAD2D;
 
 
 
@@ -94,7 +94,7 @@ public:
     modelMatrix = glm::rotate(modelMatrix, rotation_, glm::vec3(0.0f, 0.0f, 1.0f));
     shaderProgram_.setMat4fv("model", modelMatrix);
 
-    shaderProgram_.use();
+    shaderProgram_.select();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   }

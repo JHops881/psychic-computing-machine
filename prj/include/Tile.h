@@ -13,7 +13,7 @@
 class Tile : GameObject {
 
 
-  Quad2D model_ = Quad2D();
+  Quad2D& model_ = *g_QUAD2D;
 
 
 public:
@@ -28,11 +28,9 @@ public:
 
     model_.select();
 
-    glm::mat4 modelMatrix = glm::mat4(1.0f);
-    modelMatrix = glm::translate(modelMatrix, pos_);
-    shaderProgram_.setMat4fv("model", modelMatrix);
+    shaderProgram_.updateMatrix(MODEL, pos_);
 
-    shaderProgram_.use();
+    shaderProgram_.select();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
   }
