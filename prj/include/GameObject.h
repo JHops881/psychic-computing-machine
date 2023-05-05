@@ -17,8 +17,15 @@ class GameObject {
 
 protected: // related to the graphics component
 
+public:
 
-  ShaderProgram& shaderProgram_;
+  static Quad2D*    quadModel_;
+  static Cuboid3D*  cuboidModel_;
+
+protected:
+
+  ShaderProgram&    shaderProgram_;
+
 
 
 protected: // related to existing existing in 3d space
@@ -42,9 +49,14 @@ protected:
   virtual void draw() = 0;
 
 
+public:
+
+  static void configureModels(Cuboid3D* cubeptr, Quad2D* quadptr) {
+    quadModel_ = quadptr;
+    cuboidModel_ = cubeptr;
+  }
 
 
 };
-
 
 #endif

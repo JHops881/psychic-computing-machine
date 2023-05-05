@@ -7,6 +7,7 @@
     <ClCompile Include="src\AABB2D.cc" />
     <ClCompile Include="include\models.h" />
     <ClCompile Include="src\my_glfw_callbacks.cpp" />
+    <ClCompile Include="src\GameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\shader_obj.h" />

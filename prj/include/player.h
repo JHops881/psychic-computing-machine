@@ -26,14 +26,10 @@
 
 class Player : GameObject{
 
-  Quad2D& model_ = *g_QUAD2D;
-
-
 
   double       shootCD_  =  0.35;   // time between shots
   double       lastShot_  =  0.0; // the of the last shot
 
- 
 
 
 public:
@@ -42,6 +38,7 @@ public:
     : GameObject(glm::vec3(0.0f, 0.0f, 0.0f), 0.0f, shaderProgram) {
 
   }
+
 
 
   inline float getRotation() const {
@@ -120,7 +117,7 @@ public:
   // called every frame in Render() to draw the player
   void draw() {
 
-    model_.select();
+    quadModel_->select();
 
     shaderProgram_.updateMatrix(MODEL, pos_, rotation_);
 

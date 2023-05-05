@@ -20,10 +20,6 @@
 
 class Projectile : GameObject {
 
-  Quad2D& model_ = *g_QUAD2D;
-
-
-
   glm::vec3           velocity_ = glm::vec3(0.0f, 0.0f, 0.0f); // below*
   static const int    lifetime_ = 120; // measured in FixedUpdate()s
 
@@ -87,7 +83,7 @@ public:
 
     // since model_ is a std::reference_wrapper, you have to use
     // .get() to "get" to to access the object it is wrapping
-    model_.select();
+    quadModel_->select();
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, pos_);

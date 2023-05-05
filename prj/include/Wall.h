@@ -12,10 +12,6 @@
 
 class Wall : GameObject {
 
-
-  Cuboid3D& model_ = *g_CUBOID3D;
-
-
 public:
   
   Wall(glm::vec3 position, ShaderProgram& shaderProgram)
@@ -26,7 +22,7 @@ public:
   
   void draw() override {
     
-    model_.select();
+    cuboidModel_->select();
 
     shaderProgram_.updateMatrix(MODEL, pos_);
 

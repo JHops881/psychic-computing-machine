@@ -35,21 +35,7 @@
 #include <my_glfw_callbacks.h>
 #include <Wall.h>
 #include <Tile.h>
-
-
-// we define them here using that constructor that will make them
-// empty so that all of our things that inheret
-// <GameObject.h>::GameObject(s) can have
-// a reference to them at compile time.
-//
-// OpenGL cannot be interracted with until it its context is 
-// assigned to a thread with glfwMakeContextCurrent(window);
-// Thefore, we have to do this finicky business, then use
-// the actual constructors that give them openGL objects during
-// runtime in the main after we assign the openGL context to our
-// thread. 
-Quad2D*    g_QUAD2D   = new Quad2D('g');
-Cuboid3D*  g_CUBOID3D = new Cuboid3D('g');
+#include <GameObject.h>
 
 
 int main() {
@@ -117,8 +103,11 @@ int main() {
                                                                   
   //--------------------------------------------------------------
 
-  *g_QUAD2D = Quad2D();
-  *g_CUBOID3D = Cuboid3D();
+  Quad2D* g_QUAD2D = new Quad2D();
+  Cuboid3D* g_CUBOID3D = new Cuboid3D();
+
+  GameObject::configureModels(g_CUBOID3D, g_QUAD2D);
+
 
 
   // create the shader program
@@ -129,13 +118,16 @@ int main() {
 
   Player playerOne = Player(generalShader);
 
-  Wall wallOne = Wall(glm::vec3(1.0f, 0.0f, 0.0f), generalShader);
+  Wall wallOne = Wall(glm::vec3(1.0f, 1.0f, 0.0f), generalShader);
   Wall wallTwo = Wall(glm::vec3(4.0f, 6.0f, 0.0f), generalShader);
 
-  Tile tileOne = Tile(glm::vec3(-3.0f, -3.0f, 0.0f), generalShader);
-
-
-
+  Tile tileOne = Tile(glm::vec3(1.0f, 1.0f, 0.0f), generalShader);
+  Tile tileTwo = Tile(glm::vec3(2.0f, 2.0f, 0.0f), generalShader);
+  Tile tileThree = Tile(glm::vec3(3.0f, 3.0f, 0.0f), generalShader);
+  Tile tileFour = Tile(glm::vec3(4.0f, 4.0f, 0.0f), generalShader);
+  Tile tileFive = Tile(glm::vec3(5.0f, 5.0f, 0.0f), generalShader);
+  Tile tileSix = Tile(glm::vec3(6.0f, 6.0f, 0.0f), generalShader);
+  Tile tileSeven = Tile(glm::vec3(7.0f, 7.0f, 0.0f), generalShader);
 
 
   
@@ -204,6 +196,13 @@ int main() {
       wallOne.draw();
       wallTwo.draw();
       tileOne.draw();
+      tileTwo.draw();
+      tileThree.draw();
+      tileFour.draw();
+      tileFive.draw();
+      tileSix.draw();
+      tileSeven.draw();
+
 
       glfwSwapBuffers(window);
     }

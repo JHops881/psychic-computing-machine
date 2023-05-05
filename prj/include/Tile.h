@@ -13,9 +13,6 @@
 class Tile : GameObject {
 
 
-  Quad2D& model_ = *g_QUAD2D;
-
-
 public:
 
   Tile(glm::vec3 position, ShaderProgram& shaderProgram)
@@ -24,9 +21,11 @@ public:
   }
 
 
+
+
   void draw() override {
 
-    model_.select();
+    quadModel_->select();
 
     shaderProgram_.updateMatrix(MODEL, pos_);
 

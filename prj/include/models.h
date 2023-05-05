@@ -159,9 +159,4 @@ public:
 };
 
 
-// Defined in main.
-extern Quad2D* g_QUAD2D;
-extern Cuboid3D* g_CUBOID3D;
-
-
 #endif
